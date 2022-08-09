@@ -1,5 +1,4 @@
 # Profanator-API
-___
 API reativa desenvolvida em **Spring WebFlux** com o propósito de fornecer dados relacionados aos itens do **Profane**.
 
 - [Endpoints](https://github.com/J-Player/Profanator-API#endpoints)
@@ -8,7 +7,6 @@ API reativa desenvolvida em **Spring WebFlux** com o propósito de fornecer dado
 - [Contato](https://github.com/J-Player/Profanator-API#contato)
 
 # Endpoints
-___
 Para informações detalhadas sobre os _Endpoints_ da aplicação, acesse o **_Swagger UI_** da API enquanto o servidor
 estiver *rodando*.
 
@@ -17,7 +15,6 @@ Sintaxe: http://&lt;host&gt;[:&lt;port&gt;]/swagger-ui.html
 Exemplo: http://localhost:8080/swagger-ui.html.
 
 # Dados
-___
 Como o Profane ainda não tem uma API para desenvolvedores, foi necessário criar todos os dados (itens) da API
 manualmente e adiciona-los num **banco de dados pessoal provisório**.
 
@@ -26,7 +23,6 @@ Atualmente, com a versão **Pré-Alpha** do Profane, há um total de **184 itens
 Os dados, por enquanto, **NÃO** estão incluídos no projeto.
 
 # Dependências
-___
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-webflux:2.6.7' //SPRING WEBFLUX
 implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc:2.6.7' //SPRING R2DBC
@@ -47,7 +43,6 @@ testImplementation 'io.projectreactor:reactor-test:3.4.18' //REACTOR TEST
 ```
 
 # Contato
-___
 Para mais informações, feedbacks ou dúvidas, contate-me.
 
 **Discord: JP#3185**
