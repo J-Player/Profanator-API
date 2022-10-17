@@ -23,24 +23,11 @@ Atualmente, com a versão **Pré-Alpha** do Profane, há um total de **184 itens
 Os dados, por enquanto, **NÃO** estão incluídos no projeto.
 
 # Dependências
-```groovy
-implementation 'org.springframework.boot:spring-boot-starter-webflux:2.6.7' //SPRING WEBFLUX
-implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc:2.6.7' //SPRING R2DBC
-implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.7' //SPRING VALIDATION
-implementation 'org.springframework.boot:spring-boot-starter-security:2.6.7' //SPRING SECURITY
-implementation 'io.r2dbc:r2dbc-postgresql:0.8.12.RELEASE' //R2DBC POSTGRESQL
-implementation 'org.springframework.boot:spring-boot-devtools:2.6.7' //SPRING DEV-TOOLS
-implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.8' //SPRINGDOC OPENAPI WEBFLUX
-implementation 'io.projectreactor.netty:reactor-netty:1.0.19' //NETTY
-implementation 'org.projectlombok:lombok:1.18.24' //LOMBOK
-annotationProcessor 'org.projectlombok:lombok:1.18.24' //LOMBOK
-implementation 'org.mapstruct:mapstruct:1.4.2.Final' //MAPSTRUCT
-annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final' //MAPSTRUCT
-testImplementation 'io.projectreactor.tools:blockhound:1.0.6.RELEASE' //BLOCKHOUND
-testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.7' //SPRING TEST
-testImplementation 'org.springframework.security:spring-security-test:5.6.3' //SPRING SECURITY TEST
-testImplementation 'io.projectreactor:reactor-test:3.4.18' //REACTOR TEST
-```
+- Spring Boot (Webflux, Data R2DBC, Validation, Security)
+- Driver R2DBC Postgres
+- Reactor Netty
+- Lombok
+- Mapstruct
 
 # Contato
 Para mais informações, feedbacks ou dúvidas, contate-me.

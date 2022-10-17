@@ -1,0 +1,25 @@
+services:
+  db:
+    container_name: postgres_container
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - "./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql"
+      - "./src/main/resources/data.sql:/docker-entrypoint-initdb.d/2_data.sql"
+  api:
+    container_name: profanator_container
+    build: .
+#    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgres://db:5432/profanator_db?createDatabaseIfNotExist=true
+      - SPRING_R2DBC_USERNAME=root
+      - SPRING_R2DBC_PASSWORD=root
+volumes:
+  profanator_data:

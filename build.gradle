@@ -32,6 +32,6 @@ java {
     }
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 }

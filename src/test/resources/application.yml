@@ -7,14 +7,14 @@ logging:
   level:
     org:
       springframework:
-        data:
-          r2dbc: DEBUG
-        cache: TRACE
+        r2dbc: INFO
+        cache: DEBUG
+    api:
+      config:
+        cache: DEBUG
+      service:
+        cache: DEBUG
 server:
   port: 8080
   error:
     include-stacktrace: on_param
-app:
-  config:
-    cache:
-      ttl: 60s

@@ -1,10 +1,9 @@
 package api.integration;
 
-import api.domain.Ingredient;
-import api.repository.IngredientRepository;
-import api.request.post.IngredientPostRequestBody;
-import api.request.put.IngredientPutRequestBody;
-import api.service.ItemService;
+import api.domains.Ingredient;
+import api.domains.dtos.IngredientDTO;
+import api.repositories.IngredientRepository;
+import api.services.ItemService;
 import api.util.IngredientCreator;
 import api.util.ItemCreator;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +20,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.mockito.ArgumentMatchers.*;
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -29,7 +31,6 @@ import static org.mockito.ArgumentMatchers.*;
 class IngredientControllerIT {
 
     private static final String ADMIN_USER = "admin";
-    private static final String REGULAR_USER = "user";
     private static final String PATH = "/ingredients";
 
     @Autowired
@@ -42,14 +43,12 @@ class IngredientControllerIT {
     private IngredientRepository ingredientRepository;
 
     private final Ingredient ingredient = IngredientCreator.ingredient();
-    private final IngredientPostRequestBody ingredientToSave = IngredientCreator.ingredientToSave();
-    private final IngredientPutRequestBody ingredientToUpdate = IngredientCreator.ingredientToUpdate();
-    private final IngredientPostRequestBody invalidIngredientToSave = IngredientCreator.invalidIngredientToSave();
-    private final IngredientPutRequestBody invalidIngredientToUpdate = IngredientCreator.invalidIngredientToUpdate();
+    private final IngredientDTO ingredientDTO = IngredientCreator.ingredientDTO();
+    private final IngredientDTO invalidIngredientDTO = IngredientCreator.invalidIngredientDTO();
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(ingredientRepository.findById(anyInt())).thenReturn(Mono.just(ingredient));
+        BDDMockito.when(ingredientRepository.findById(any(UUID.class))).thenReturn(Mono.just(ingredient));
         BDDMockito.when(ingredientRepository.findByProductAndNameAllIgnoreCase(anyString(), anyString())).thenReturn(Mono.just(ingredient));
         BDDMockito.when(ingredientRepository.findByProductIgnoreCase(anyString(), any(Sort.class))).thenReturn(Flux.just(ingredient));
         BDDMockito.when(ingredientRepository.findAll(any(Sort.class))).thenReturn(Flux.just(ingredient));
@@ -63,7 +62,7 @@ class IngredientControllerIT {
     @DisplayName("findById | Returns a ingredient when successful")
     void findById() {
         client.get()
-                .uri(PATH.concat("/{id}"), 1)
+                .uri(PATH.concat("/{id}"), ingredient.getId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Ingredient.class)
@@ -74,9 +73,9 @@ class IngredientControllerIT {
     @WithUserDetails
     @DisplayName("findById | Returns 404 error when not found")
     void findById_ReturnsError_WhenNotFound() {
-        BDDMockito.when(ingredientRepository.findById(anyInt())).thenReturn(Mono.empty());
+        BDDMockito.when(ingredientRepository.findById(any(UUID.class))).thenReturn(Mono.empty());
         client.get()
-                .uri(PATH.concat("/{id}"), 0)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -98,7 +97,7 @@ class IngredientControllerIT {
     @DisplayName("findByItemAndIngredient | Returns 404 error when not found")
     void findByItemAndIngredient_ReturnsError_WhenNotFound() {
         BDDMockito.when(ingredientRepository.findByProductAndNameAllIgnoreCase(anyString(), anyString()))
-                        .thenReturn(Mono.empty());
+                .thenReturn(Mono.empty());
         client.get()
                 .uri(PATH.concat("/{item}/{ingredient}"), "randomProduct", "randomName")
                 .exchange()
@@ -138,7 +137,7 @@ class IngredientControllerIT {
     void save() {
         client.post()
                 .uri(PATH)
-                .bodyValue(ingredientToSave)
+                .bodyValue(ingredientDTO)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Ingredient.class)
@@ -151,7 +150,7 @@ class IngredientControllerIT {
     void save_ReturnsError_WhenInvalidIngredient() {
         client.post()
                 .uri(PATH)
-                .bodyValue(invalidIngredientToSave)
+                .bodyValue(invalidIngredientDTO)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -162,18 +161,18 @@ class IngredientControllerIT {
     void save_ReturnsError_WhenForbiddenUser() {
         client.post()
                 .uri(PATH)
-                .bodyValue(ingredientToSave)
+                .bodyValue(ingredientDTO)
                 .exchange()
                 .expectStatus().isForbidden();
     }
 
     @Test
     @WithUserDetails(ADMIN_USER)
-        @DisplayName("update | Returns status 204 (no content) when successful")
+    @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
         client.put()
-                .uri(PATH)
-                .bodyValue(ingredientToUpdate)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
+                .bodyValue(ingredientDTO)
                 .exchange()
                 .expectStatus().isNoContent();
     }
@@ -182,10 +181,10 @@ class IngredientControllerIT {
     @WithUserDetails(ADMIN_USER)
     @DisplayName("update | Returns 400 error when invalid ingredient")
     void update_ReturnsError_WhenInvalidIngredient() {
-        BDDMockito.when(ingredientRepository.findById(anyInt())).thenReturn(Mono.empty());
+        BDDMockito.when(ingredientRepository.findById(any(UUID.class))).thenReturn(Mono.empty());
         client.put()
-                .uri(PATH)
-                .bodyValue(invalidIngredientToUpdate)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
+                .bodyValue(invalidIngredientDTO)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -195,8 +194,8 @@ class IngredientControllerIT {
     @DisplayName("update | Returns 403 error when forbidden user")
     void update_ReturnsError_WhenForbiddenUser() {
         client.put()
-                .uri(PATH)
-                .bodyValue(ingredientToUpdate)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
+                .bodyValue(ingredientDTO)
                 .exchange()
                 .expectStatus().isForbidden();
     }
@@ -206,7 +205,7 @@ class IngredientControllerIT {
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
         client.delete()
-                .uri(PATH.concat("/{id}"), 1)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
                 .exchange()
                 .expectStatus().isNoContent();
     }
@@ -216,7 +215,7 @@ class IngredientControllerIT {
     @DisplayName("delete | Returns 403 error when forbidden user")
     void delete_ReturnsError_WhenForbiddenUser() {
         client.delete()
-                .uri(PATH.concat("/{id}"), 1)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
                 .exchange()
                 .expectStatus().isForbidden();
     }
@@ -225,9 +224,9 @@ class IngredientControllerIT {
     @WithUserDetails(ADMIN_USER)
     @DisplayName("delete | Returns 404 error when not found")
     void delete_ReturnsError_WhenNotFound() {
-        BDDMockito.when(ingredientRepository.findById(anyInt())).thenReturn(Mono.empty());
+        BDDMockito.when(ingredientRepository.findById(any(UUID.class))).thenReturn(Mono.empty());
         client.delete()
-                .uri(PATH.concat("/{id}"), 1)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
                 .exchange()
                 .expectStatus().isNotFound();
     }
