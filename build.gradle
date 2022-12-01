@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.7.3'
     id 'io.spring.dependency-management' version '1.0.13.RELEASE'
-    id 'java-library'
+    id 'java'
 }
 
 repositories {
@@ -14,15 +14,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation' //SPRING VALIDATION
     implementation 'org.springframework.boot:spring-boot-starter-security' //SPRING SECURITY
     implementation 'org.springframework.boot:spring-boot-devtools' //SPRING DEV-TOOLS
-    runtimeOnly 'io.r2dbc:r2dbc-postgresql:0.8.12.RELEASE' //R2DBC POSTGRESQL
-    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.10' //SPRINGDOC OPENAPI WEBFLUX
+    runtimeOnly 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE' //R2DBC POSTGRESQL
+    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.13' //SPRINGDOC OPENAPI WEBFLUX
     implementation 'org.projectlombok:lombok:1.18.24' //LOMBOK
     annotationProcessor 'org.projectlombok:lombok:1.18.24' //LOMBOK
-    implementation 'org.mapstruct:mapstruct:1.5.2.Final' //MAPSTRUCT
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final' //MAPSTRUCT
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final' //MAPSTRUCT
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final' //MAPSTRUCT
     testImplementation 'org.springframework.boot:spring-boot-starter-test' //SPRING TEST
     testImplementation 'org.springframework.security:spring-security-test:5.7.3' //SPRING SECURITY TEST
-    testImplementation 'io.projectreactor:reactor-test:3.1.0.RELEASE' //REACTOR TEST
+    testImplementation 'io.projectreactor:reactor-test:3.4.24' //REACTOR TEST
     testImplementation 'io.projectreactor.tools:blockhound:1.0.6.RELEASE' //BLOCKHOUND
 }
 
