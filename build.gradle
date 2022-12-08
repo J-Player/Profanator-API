@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.7.3'
-    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
 }
 
@@ -13,8 +13,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc' //SPRING R2DBC
     implementation 'org.springframework.boot:spring-boot-starter-validation' //SPRING VALIDATION
     implementation 'org.springframework.boot:spring-boot-starter-security' //SPRING SECURITY
-    implementation 'org.springframework.boot:spring-boot-devtools' //SPRING DEV-TOOLS
-    runtimeOnly 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE' //R2DBC POSTGRESQL
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' //SPRING DEV-TOOLS
+    runtimeOnly 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE' //R2DBC POSTGRESQL DRIVER
     implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.13' //SPRINGDOC OPENAPI WEBFLUX
     implementation 'org.projectlombok:lombok:1.18.24' //LOMBOK
     annotationProcessor 'org.projectlombok:lombok:1.18.24' //LOMBOK
