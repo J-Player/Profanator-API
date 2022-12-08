@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -21,8 +20,6 @@ import java.util.UUID;
 public class UserService implements ReactiveUserDetailsService, AbstractService<User> {
 
     private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
@@ -52,16 +49,14 @@ public class UserService implements ReactiveUserDetailsService, AbstractService<
 
     @Override
     public Mono<User> save(User user) {
-        String rawPassword = user.getPassword();
-        user.setPassword(passwordEncoder.encode(rawPassword));
-        return userRepository.save(user)
-                .doOnNext(u -> u.setPassword(rawPassword));
+        return userRepository.save(user);
     }
 
     @Override
     public Mono<Void> update(User user) {
         return findById(user.getId())
-                .doOnNext(userRepository::save)
+                .thenReturn(user)
+                .flatMap(userRepository::save)
                 .then();
     }
 
