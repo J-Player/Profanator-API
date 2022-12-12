@@ -1,18 +1,14 @@
 package api.integration;
 
-import api.domain.Proficiency;
-import api.repository.ProficiencyRepository;
-import api.request.post.ProficiencyPostRequestBody;
-import api.request.put.ProficiencyPutRequestBody;
-import api.service.ProficiencyService;
+import api.domains.Proficiency;
+import api.domains.dtos.ProficiencyDTO;
+import api.repositories.ProficiencyRepository;
 import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -20,19 +16,17 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.mockito.ArgumentMatchers.*;
+import java.util.UUID;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
+import static api.integration.constraint.IntegrationConstraint.ADMIN_USER;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+
+@IntegrationTest
 @DisplayName("Proficiency Controller Integration")
 class ProficiencyControllerIT {
 
-    private static final String ADMIN_USER = "admin";
-    private static final String REGULAR_USER = "user";
     private static final String PATH = "/proficiencies";
-
-    @Autowired
-    private ProficiencyService proficiencyService;
 
     @Autowired
     private WebTestClient client;
@@ -41,14 +35,12 @@ class ProficiencyControllerIT {
     private ProficiencyRepository proficiencyRepository;
 
     private final Proficiency proficiency = ProficiencyCreator.proficiency();
-    private final ProficiencyPostRequestBody proficiencyToSaved = ProficiencyCreator.proficiencyToSave();
-    private final ProficiencyPutRequestBody proficiencyToUpdated = ProficiencyCreator.proficiencyToUpdate();
-    private final ProficiencyPostRequestBody invalidProficiencyToSaved = ProficiencyCreator.invalidProficiencyToSave();
-    private final ProficiencyPutRequestBody invalidProficiencyToUpdated = ProficiencyCreator.invalidProficiencyToUpdate();
+    private final ProficiencyDTO proficiencyDTO = ProficiencyCreator.proficiencyDTO();
+    private final ProficiencyDTO invalidProficiencyDTO = ProficiencyCreator.invalidProficiencyDTO();
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(proficiencyRepository.findById(anyInt())).thenReturn(Mono.just(proficiency));
+        BDDMockito.when(proficiencyRepository.findById(any(UUID.class))).thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyRepository.findByNameIgnoreCase(anyString())).thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyRepository.findAll(any(Sort.class))).thenReturn(Flux.just(proficiency));
         BDDMockito.when(proficiencyRepository.save(any(Proficiency.class))).thenReturn(Mono.just(proficiency));
@@ -60,7 +52,7 @@ class ProficiencyControllerIT {
     @DisplayName("findById | Returns a proficiency when successful")
     void findById() {
         client.get()
-                .uri(PATH.concat("/{id}"), 1)
+                .uri(PATH.concat("/{id}"), proficiency.getId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Proficiency.class)
@@ -71,9 +63,9 @@ class ProficiencyControllerIT {
     @WithUserDetails
     @DisplayName("findById | Returns 404 error when not found")
     void findById_ReturnsError_WhenNotFound() {
-        BDDMockito.when(proficiencyRepository.findById(anyInt())).thenReturn(Mono.empty());
+        BDDMockito.when(proficiencyRepository.findById(any(UUID.class))).thenReturn(Mono.empty());
         client.get()
-                .uri(PATH.concat("/{id}"), 0)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -121,7 +113,7 @@ class ProficiencyControllerIT {
     void save() {
         client.post()
                 .uri(PATH)
-                .bodyValue(proficiencyToSaved)
+                .bodyValue(proficiencyDTO)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Proficiency.class)
@@ -134,7 +126,7 @@ class ProficiencyControllerIT {
     void save_ReturnsError_WhenInvalidProficiency() {
         client.post()
                 .uri(PATH)
-                .bodyValue(invalidProficiencyToSaved)
+                .bodyValue(invalidProficiencyDTO)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -145,7 +137,7 @@ class ProficiencyControllerIT {
     void save_ReturnsError_WhenForbiddenUser() {
         client.post()
                 .uri(PATH)
-                .bodyValue(proficiencyToSaved)
+                .bodyValue(proficiencyDTO)
                 .exchange()
                 .expectStatus().isForbidden();
     }
@@ -155,8 +147,8 @@ class ProficiencyControllerIT {
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
         client.put()
-                .uri(PATH)
-                .bodyValue(proficiencyToUpdated)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
+                .bodyValue(proficiencyDTO)
                 .exchange()
                 .expectStatus().isNoContent();
     }
@@ -165,10 +157,10 @@ class ProficiencyControllerIT {
     @WithUserDetails(ADMIN_USER)
     @DisplayName("update | Returns 400 error when invalid proficiency")
     void update_ReturnsError_WhenInvalidProficiency() {
-        BDDMockito.when(proficiencyRepository.findById(anyInt())).thenReturn(Mono.empty());
+        BDDMockito.when(proficiencyRepository.findById(any(UUID.class))).thenReturn(Mono.empty());
         client.put()
-                .uri(PATH)
-                .bodyValue(invalidProficiencyToUpdated)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
+                .bodyValue(invalidProficiencyDTO)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -178,8 +170,8 @@ class ProficiencyControllerIT {
     @DisplayName("update | Returns 403 error when forbidden user")
     void update_ReturnsError_WhenForbiddenUser() {
         client.put()
-                .uri(PATH)
-                .bodyValue(proficiencyToUpdated)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
+                .bodyValue(proficiencyDTO)
                 .exchange()
                 .expectStatus().isForbidden();
     }
@@ -189,7 +181,7 @@ class ProficiencyControllerIT {
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
         client.delete()
-                .uri(PATH.concat("/{id}"), 1)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
                 .exchange()
                 .expectStatus().isNoContent();
     }
@@ -199,7 +191,7 @@ class ProficiencyControllerIT {
     @DisplayName("delete | Returns 403 error when forbidden user")
     void delete_ReturnsError_WhenForbiddenUser() {
         client.delete()
-                .uri(PATH.concat("/{id}"), 1)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
                 .exchange()
                 .expectStatus().isForbidden();
     }
@@ -208,9 +200,9 @@ class ProficiencyControllerIT {
     @WithUserDetails(ADMIN_USER)
     @DisplayName("delete | Returns 404 error when not found")
     void delete_ReturnsError_WhenNotFound() {
-        BDDMockito.when(proficiencyRepository.findById(anyInt())).thenReturn(Mono.empty());
+        BDDMockito.when(proficiencyRepository.findById(any(UUID.class))).thenReturn(Mono.empty());
         client.delete()
-                .uri(PATH.concat("/{id}"), 1)
+                .uri(PATH.concat("/{id}"), UUID.randomUUID())
                 .exchange()
                 .expectStatus().isNotFound();
     }

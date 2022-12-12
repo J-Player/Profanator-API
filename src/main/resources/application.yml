@@ -1,20 +1,22 @@
 spring:
   r2dbc:
-    url: r2dbc:postgres://localhost:5432/profanator_db
-    username: postgres
-    password: admin
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+springdoc:
+  webjars:
+    prefix: ""
 logging:
   level:
     org:
       springframework:
-        data:
-          r2dbc: INFO
-        cache: TRACE
+        r2dbc: INFO
+        cache: DEBUG
+    api:
+      config:
+        cache: DEBUG
+      service:
+        cache: DEBUG
 server:
-  port: 8080
   error:
     include-stacktrace: on_param
-app:
-  config:
-    cache:
-      ttl: 60s

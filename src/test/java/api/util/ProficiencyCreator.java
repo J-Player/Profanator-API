@@ -1,12 +1,13 @@
 package api.util;
 
-import api.domain.Proficiency;
-import api.request.post.ProficiencyPostRequestBody;
-import api.request.put.ProficiencyPutRequestBody;
+import api.domains.Proficiency;
+import api.domains.dtos.ProficiencyDTO;
+
+import java.util.UUID;
 
 public abstract class ProficiencyCreator {
 
-    private static final Integer ID = 1;
+    private static final UUID ID = UUID.randomUUID();
     private static final String NAME = "Proficiency";
 
     public static Proficiency proficiency() {
@@ -16,28 +17,14 @@ public abstract class ProficiencyCreator {
                 .build();
     }
 
-    public static ProficiencyPostRequestBody proficiencyToSave() {
-        return ProficiencyPostRequestBody.builder()
+    public static ProficiencyDTO proficiencyDTO() {
+        return ProficiencyDTO.builder()
                 .name(NAME)
                 .build();
     }
 
-    public static ProficiencyPutRequestBody proficiencyToUpdate() {
-        return ProficiencyPutRequestBody.builder()
-                .id(ID)
-                .name(NAME)
-                .build();
-    }
-
-    public static ProficiencyPostRequestBody invalidProficiencyToSave() {
-        return ProficiencyPostRequestBody.builder()
-                .name(null)
-                .build();
-    }
-
-    public static ProficiencyPutRequestBody invalidProficiencyToUpdate() {
-        return ProficiencyPutRequestBody.builder()
-                .id(null)
+    public static ProficiencyDTO invalidProficiencyDTO() {
+        return ProficiencyDTO.builder()
                 .name(null)
                 .build();
     }

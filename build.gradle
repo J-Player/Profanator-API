@@ -1,5 +1,7 @@
 plugins {
-    id 'java-library'
+    id 'org.springframework.boot' version '2.7.3'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'java'
 }
 
 repositories {
@@ -7,22 +9,21 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-webflux:2.6.7' //SPRING WEBFLUX
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc:2.6.7' //SPRING R2DBC
-    implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.7' //SPRING VALIDATION
-    implementation 'org.springframework.boot:spring-boot-starter-security:2.6.7' //SPRING SECURITY
-    implementation 'io.r2dbc:r2dbc-postgresql:0.8.12.RELEASE' //R2DBC POSTGRESQL
-    implementation 'org.springframework.boot:spring-boot-devtools:2.6.7' //SPRING DEV-TOOLS
-    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.8' //SPRINGDOC OPENAPI WEBFLUX
-    implementation 'io.projectreactor.netty:reactor-netty:1.0.19' //NETTY
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' //SPRING WEBFLUX
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc' //SPRING R2DBC
+    implementation 'org.springframework.boot:spring-boot-starter-validation' //SPRING VALIDATION
+    implementation 'org.springframework.boot:spring-boot-starter-security' //SPRING SECURITY
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' //SPRING DEV-TOOLS
+    runtimeOnly 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE' //R2DBC POSTGRESQL DRIVER
+    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.13' //SPRINGDOC OPENAPI WEBFLUX
     implementation 'org.projectlombok:lombok:1.18.24' //LOMBOK
     annotationProcessor 'org.projectlombok:lombok:1.18.24' //LOMBOK
-    implementation 'org.mapstruct:mapstruct:1.4.2.Final' //MAPSTRUCT
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final' //MAPSTRUCT
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final' //MAPSTRUCT
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final' //MAPSTRUCT
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' //SPRING TEST
+    testImplementation 'org.springframework.security:spring-security-test:5.7.3' //SPRING SECURITY TEST
+    testImplementation 'io.projectreactor:reactor-test:3.4.24' //REACTOR TEST
     testImplementation 'io.projectreactor.tools:blockhound:1.0.6.RELEASE' //BLOCKHOUND
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.7' //SPRING TEST
-    testImplementation 'org.springframework.security:spring-security-test:5.6.3' //SPRING SECURITY TEST
-    testImplementation 'io.projectreactor:reactor-test:3.4.18' //REACTOR TEST
 }
 
 java {
@@ -31,7 +32,6 @@ java {
     }
 }
 
-tasks.named('test') {
-    // Use JUnit Platform for unit tests.
+test {
     useJUnitPlatform()
 }
