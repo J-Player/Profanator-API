@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table("profanator_user")
+@Table("Profanator_User")
 public class User implements UserDetails {
 
     @Id

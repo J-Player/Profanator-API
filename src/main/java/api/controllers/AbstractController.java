@@ -4,7 +4,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface AbstractController<T, DTO> {
+interface AbstractController<T, DTO> {
 
     Mono<T> findById(UUID id);
     Mono<T> save(DTO dto);

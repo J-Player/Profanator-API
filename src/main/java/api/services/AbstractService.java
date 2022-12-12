@@ -5,7 +5,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface AbstractService<T> {
+interface AbstractService<T> {
 
     Mono<T> findById(UUID id);
 
