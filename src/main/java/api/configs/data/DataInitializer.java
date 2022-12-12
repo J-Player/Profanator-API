@@ -13,29 +13,26 @@ import java.util.List;
 
 @Slf4j
 @Component
-@Profile("dev")
 @RequiredArgsConstructor
+@Profile({"dev", "test"})
 public class DataInitializer implements ApplicationRunner {
 
     private final UserRepository userRepository;
 
     @Override
     public void run(ApplicationArguments args) {
-        userRepository.saveAll(List.of(
+        userRepository.deleteAll().thenReturn(
+                userRepository.saveAll(List.of(
                         User.builder()
                                 .username("admin")
-                                .authorities("ROLE_ADMIN,ROLE_USER")
                                 .password("admin")
+                                .authorities("ROLE_ADMIN,ROLE_USER")
                                 .build(),
                         User.builder()
                                 .username("user")
-                                .authorities("ROLE_USER")
                                 .password("user")
-                                .build()))
-                .thenMany(userRepository.findAll().doOnSubscribe(s -> log.info("Buscando usuários...")))
-                .subscribe(user -> log.info("User: {}", user),
-                        ex -> log.error("{}: {}", ex.getClass().getSimpleName(), ex.getMessage()),
-                        () -> log.info("Busca finalizada."));
+                                .authorities("ROLE_USER")
+                                .build())));
     }
 
 }

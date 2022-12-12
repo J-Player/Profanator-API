@@ -1,5 +1,5 @@
 spring:
   r2dbc:
-    url: r2dbc:postgres://localhost:5432/postgres?schema=profanatordb
+    url: r2dbc:postgres://localhost:5432/postgres
     username: postgres
     password: postgres
