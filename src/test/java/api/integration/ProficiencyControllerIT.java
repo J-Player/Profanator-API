@@ -9,8 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -20,15 +18,14 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+import static api.integration.constraint.IntegrationConstraint.ADMIN_USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
+@IntegrationTest
 @DisplayName("Proficiency Controller Integration")
 class ProficiencyControllerIT {
 
-    private static final String ADMIN_USER = "admin";
     private static final String PATH = "/proficiencies";
 
     @Autowired
