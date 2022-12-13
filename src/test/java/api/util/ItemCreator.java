@@ -5,12 +5,14 @@ import api.domains.dtos.ItemDTO;
 
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
+
 public abstract class ItemCreator {
 
-    private static final UUID ID = UUID.randomUUID();
-    private static final String PROFICIENCY = "proficiency";
-    private static final String NAME = "name";
-    private static final int QTBYPRODUCTION = 1;
+    private static final UUID ID = randomUUID();
+    protected static final String PROFICIENCY = ProficiencyCreator.NAME;
+    protected static final String NAME = "item";
+    protected static final int QTBYPRODUCTION = 1;
 
     public static Item item() {
         return Item.builder()

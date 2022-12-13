@@ -5,11 +5,13 @@ import api.domains.dtos.IngredientDTO;
 
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
+
 public abstract class IngredientCreator {
 
-    private static final UUID ID = UUID.randomUUID();
-    private static final String PRODUCT = "Product";
-    private static final String NAME = "Name";
+    private static final UUID ID = randomUUID();
+    private static final String PRODUCT = ItemCreator.NAME;
+    private static final String NAME = ItemCreator.NAME;
     private static final int QUANTITY = 1;
 
     public static Ingredient ingredient() {

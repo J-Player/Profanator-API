@@ -2,6 +2,7 @@ package api.integration;
 
 import api.domains.Item;
 import api.domains.dtos.ItemDTO;
+import api.integration.annotation.IntegrationTest;
 import api.repositories.ItemRepository;
 import api.services.ProficiencyService;
 import api.util.ItemCreator;
@@ -24,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @IntegrationTest
-@DisplayName("Item Controller Integration")
+@DisplayName("Item Controller Integration Test")
 class ItemControllerIT {
 
     private static final String ADMIN_USER = "admin";

@@ -5,9 +5,11 @@ import api.domains.dtos.UserDTO;
 
 import java.util.UUID;
 
-public class UserCreator {
+import static java.util.UUID.randomUUID;
 
-    private static final UUID ID = UUID.randomUUID();
+public abstract class UserCreator {
+
+    private static final UUID ID = randomUUID();
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String AUTHORITIES = "ROLE_USER";

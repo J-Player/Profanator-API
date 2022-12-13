@@ -2,6 +2,7 @@ package api.integration;
 
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
+import api.integration.annotation.IntegrationTest;
 import api.repositories.ProficiencyRepository;
 import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @IntegrationTest
-@DisplayName("Proficiency Controller Integration")
+@DisplayName("Proficiency Controller Integration Test")
 class ProficiencyControllerIT {
 
     private static final String PATH = "/proficiencies";
