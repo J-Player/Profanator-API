@@ -9,4 +9,4 @@ logging:
       springframework:
         test:
           context:
-            cache: DEBUG
+            cache: ERROR

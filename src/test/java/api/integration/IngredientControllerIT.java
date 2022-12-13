@@ -2,6 +2,7 @@ package api.integration;
 
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
+import api.integration.annotation.IntegrationTest;
 import api.repositories.IngredientRepository;
 import api.services.ItemService;
 import api.util.IngredientCreator;
@@ -24,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @IntegrationTest
-@DisplayName("Ingredient Controller Integration")
+@DisplayName("Ingredient Controller Integration Test")
 class IngredientControllerIT {
 
     private static final String ADMIN_USER = "admin";
