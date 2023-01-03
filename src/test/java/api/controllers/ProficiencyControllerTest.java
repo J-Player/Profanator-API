@@ -5,10 +5,7 @@ import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
 import api.services.ProficiencyService;
 import api.util.ProficiencyCreator;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
@@ -25,7 +22,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("Proficiency RedirectController Test")
+@DisplayName("Proficiency Controller Test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ProficiencyControllerTest {
 
     @InjectMocks
@@ -43,6 +41,7 @@ class ProficiencyControllerTest {
     }
 
     @Test
+    @Order(-1)
     @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
         BlockHoundTest.test();

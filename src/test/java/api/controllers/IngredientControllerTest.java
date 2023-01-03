@@ -12,21 +12,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.blockhound.BlockHound;
-import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("Ingredient RedirectController Test")
+@DisplayName("Ingredient Controller Test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class IngredientControllerTest {
 
     @InjectMocks
@@ -44,6 +41,7 @@ class IngredientControllerTest {
     }
 
     @Test
+    @Order(-1)
     @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
         BlockHoundTest.test();

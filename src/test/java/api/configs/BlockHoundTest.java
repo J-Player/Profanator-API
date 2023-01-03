@@ -23,5 +23,4 @@ public abstract class BlockHoundTest {
         }
     }
 
-
 }

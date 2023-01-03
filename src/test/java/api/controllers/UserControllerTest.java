@@ -1,5 +1,6 @@
 package api.controllers;
 
+import api.configs.BlockHoundTest;
 import api.domains.User;
 import api.domains.dtos.UserDTO;
 import api.services.UserService;
@@ -11,21 +12,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.blockhound.BlockHound;
-import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("User RedirectController Test")
+@DisplayName("User Controller Test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserControllerTest {
 
     @InjectMocks
@@ -43,18 +41,10 @@ class UserControllerTest {
     }
 
     @Test
+    @Order(-1)
+    @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
-        try {
-            FutureTask<?> task = new FutureTask<>(() -> {
-                Thread.sleep(0); //NOSONAR
-                return "";
-            });
-            Schedulers.parallel().schedule(task);
-            task.get(10, TimeUnit.SECONDS);
-            Assertions.fail("should fail");
-        } catch (Exception e) {
-            Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-        }
+        BlockHoundTest.test();
     }
 
     @BeforeEach

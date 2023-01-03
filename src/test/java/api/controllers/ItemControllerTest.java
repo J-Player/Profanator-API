@@ -22,7 +22,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("Item RedirectController Test")
+@DisplayName("Item Controller Test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ItemControllerTest {
 
     @InjectMocks
@@ -40,6 +41,7 @@ class ItemControllerTest {
     }
 
     @Test
+    @Order(-1)
     @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
         BlockHoundTest.test();

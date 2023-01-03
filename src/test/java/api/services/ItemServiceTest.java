@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Item Service Test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ItemServiceTest {
 
     @InjectMocks
@@ -48,6 +49,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @Order(-1)
     @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
         BlockHoundTest.test();
