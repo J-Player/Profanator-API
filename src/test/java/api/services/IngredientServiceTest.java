@@ -1,5 +1,6 @@
 package api.services;
 
+import api.configs.BlockHoundTest;
 import api.domains.Ingredient;
 import api.repositories.IngredientRepository;
 import api.services.cache.CacheService;
@@ -51,18 +52,9 @@ class IngredientServiceTest {
     }
 
     @Test
+    @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
-        try {
-            FutureTask<?> task = new FutureTask<>(() -> {
-                Thread.sleep(0); //NOSONAR
-                return "";
-            });
-            Schedulers.parallel().schedule(task);
-            task.get(10, TimeUnit.SECONDS);
-            Assertions.fail("should fail");
-        } catch (Exception e) {
-            Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-        }
+        BlockHoundTest.test();
     }
 
     @BeforeEach

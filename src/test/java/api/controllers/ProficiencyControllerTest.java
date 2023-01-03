@@ -1,31 +1,31 @@
 package api.controllers;
 
+import api.configs.BlockHoundTest;
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
 import api.services.ProficiencyService;
 import api.util.ProficiencyCreator;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.blockhound.BlockHound;
-import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("Proficiency Controller Test")
+@DisplayName("Proficiency RedirectController Test")
 class ProficiencyControllerTest {
 
     @InjectMocks
@@ -43,18 +43,9 @@ class ProficiencyControllerTest {
     }
 
     @Test
+    @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
-        try {
-            FutureTask<?> task = new FutureTask<>(() -> {
-                Thread.sleep(0); //NOSONAR
-                return "";
-            });
-            Schedulers.parallel().schedule(task);
-            task.get(10, TimeUnit.SECONDS);
-            Assertions.fail("should fail");
-        } catch (Exception e) {
-            Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-        }
+        BlockHoundTest.test();
     }
 
     @BeforeEach

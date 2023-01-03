@@ -1,5 +1,6 @@
 package api.controllers;
 
+import api.configs.BlockHoundTest;
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
 import api.services.IngredientService;
@@ -25,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("Ingredient Controller Test")
+@DisplayName("Ingredient RedirectController Test")
 class IngredientControllerTest {
 
     @InjectMocks
@@ -43,18 +44,9 @@ class IngredientControllerTest {
     }
 
     @Test
+    @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
-        try {
-            FutureTask<?> task = new FutureTask<>(() -> {
-                Thread.sleep(0); //NOSONAR
-                return "";
-            });
-            Schedulers.parallel().schedule(task);
-            task.get(10, TimeUnit.SECONDS);
-            Assertions.fail("should fail");
-        } catch (Exception e) {
-            Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-        }
+        BlockHoundTest.test();
     }
 
     @BeforeEach

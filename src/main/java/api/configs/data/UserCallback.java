@@ -3,6 +3,7 @@ package api.configs.data;
 import api.domains.User;
 import lombok.RequiredArgsConstructor;
 import org.reactivestreams.Publisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
+@Profile("!dev & !test")
 @RequiredArgsConstructor
 public class UserCallback implements BeforeConvertCallback<User> {
 

@@ -5,13 +5,28 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: profanatordb
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'profanatordb'
+      TZ: 'america/Sao_Paulo'
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
-      - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/2_data.sql
+      - 'pgdata:/var/lib/postgresql/data'
+      - './src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql'
+      - './src/main/resources/data.sql:/docker-entrypoint-initdb.d/2_data.sql'
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+      TZ: "America/Sao_Paulo"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres-db
+    networks:
+      - docker-network
+    restart: always
   api:
     container_name: profanator_container
     build: .
@@ -28,3 +43,6 @@ services:
       SPRING_R2DBC_PASSWORD: postgres
 volumes:
   pgdata:
+networks:
+  docker-network:
+    driver: bridge

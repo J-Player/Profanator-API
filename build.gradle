@@ -1,7 +1,8 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.3'
-    id 'io.spring.dependency-management' version '1.1.0'
+    id 'application'
     id 'java'
+    id 'org.springframework.boot' version '2.7.6'
+    id 'io.spring.dependency-management' version '1.1.0'
 }
 
 repositories {
@@ -14,9 +15,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation' //SPRING VALIDATION
     implementation 'org.springframework.boot:spring-boot-starter-security' //SPRING SECURITY
     developmentOnly 'org.springframework.boot:spring-boot-devtools' //SPRING DEV-TOOLS
-    runtimeOnly 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE' //R2DBC POSTGRESQL DRIVER
+    implementation 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE' //R2DBC POSTGRESQL DRIVER
     implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.13' //SPRINGDOC OPENAPI WEBFLUX
-    implementation 'org.projectlombok:lombok:1.18.24' //LOMBOK
+    compileOnly 'org.projectlombok:lombok:1.18.24' //LOMBOK
     annotationProcessor 'org.projectlombok:lombok:1.18.24' //LOMBOK
     implementation 'org.mapstruct:mapstruct:1.5.3.Final' //MAPSTRUCT
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final' //MAPSTRUCT
@@ -26,9 +27,19 @@ dependencies {
     testImplementation 'io.projectreactor.tools:blockhound:1.0.6.RELEASE' //BLOCKHOUND
 }
 
+application {
+    mainClassName 'api.Server'
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class' : 'api.Server'
     }
 }
 

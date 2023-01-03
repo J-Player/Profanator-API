@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("User Controller Test")
+@DisplayName("User RedirectController Test")
 class UserControllerTest {
 
     @InjectMocks
