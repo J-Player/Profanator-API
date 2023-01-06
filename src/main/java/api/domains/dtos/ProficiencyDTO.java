@@ -1,17 +1,19 @@
 package api.domains.dtos;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 
-@Data
-@With
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
 @Builder
+@RequiredArgsConstructor
+@NoArgsConstructor(force = true)
 public class ProficiencyDTO {
 
     @NotEmpty(message = "The 'name' cannot be empty or null")
-    private String name;
+    private final String name;
 
 }
