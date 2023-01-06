@@ -1,21 +1,16 @@
 spring:
   r2dbc:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: r2dbc:postgres://localhost:5432/postgres
+    username: postgres
+    password: postgres
 springdoc:
   webjars:
     prefix: ""
 logging:
-  level:
-    org:
-      springframework:
-        r2dbc: INFO
-        cache: DEBUG
     api:
-      config:
+      configs:
         cache: DEBUG
-      service:
+      services:
         cache: DEBUG
 server:
   error:
