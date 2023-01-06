@@ -71,14 +71,15 @@ public class SecurityConfig {
     @Bean
     @Profile({"dev", "test"})
     protected MapReactiveUserDetailsService userDetailsService() {
+        PasswordEncoder passwordEncoder = passwordEncoder();
         UserDetails admin = User
                 .withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
+                .password(passwordEncoder.encode("admin"))
                 .roles("ADMIN")
                 .build();
         UserDetails user = User
                 .withUsername("user")
-                .password(passwordEncoder().encode("user"))
+                .password(passwordEncoder.encode("user"))
                 .roles("USER")
                 .build();
         return new MapReactiveUserDetailsService(admin, user);
