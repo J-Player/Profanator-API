@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Item Controller Test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class ItemControllerTest {
 
     @InjectMocks
@@ -34,18 +34,6 @@ class ItemControllerTest {
 
     private final Item item = ItemCreator.item();
     private final ItemDTO itemDTO = ItemCreator.itemDTO();
-
-    @BeforeAll
-    public static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @Order(-1)
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
-    }
 
     @BeforeEach
     void setUp() {
@@ -63,6 +51,17 @@ class ItemControllerTest {
                 .thenReturn(Mono.empty());
         BDDMockito.when(itemService.delete(any(UUID.class)))
                 .thenReturn(Mono.empty());
+    }
+
+    @BeforeAll
+    static void blockHound() {
+        BlockHound.install();
+    }
+
+    @Test
+    @DisplayName("[BlockHound] Check if BlockHound is working")
+    void blockHoundWorks() {
+        BlockHoundTest.test();
     }
 
     @Test
