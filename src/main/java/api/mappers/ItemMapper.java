@@ -20,4 +20,9 @@ public abstract class ItemMapper {
     @Mapping(target = "version", ignore = true)
     public abstract Item toItem(ItemDTO itemDTO);
 
+    @Mapping(target = "proficiency", source = "item.proficiency")
+    @Mapping(target = "name", source = "item.name")
+    @Mapping(target = "qtByProduction", source = "item.qtByProduction")
+    public abstract ItemDTO toItemDTO(Item item);
+
 }

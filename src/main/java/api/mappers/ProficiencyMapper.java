@@ -18,4 +18,7 @@ public abstract class ProficiencyMapper {
     @Mapping(target = "version", ignore = true)
     public abstract Proficiency toProficiency(ProficiencyDTO proficiencyDTO);
 
+    @Mapping(target = "name", source = "proficiency.name")
+    public abstract ProficiencyDTO toProficiencyDTO(Proficiency proficiency);
+
 }

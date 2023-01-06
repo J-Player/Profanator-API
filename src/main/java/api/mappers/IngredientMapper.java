@@ -20,4 +20,9 @@ public abstract class IngredientMapper {
     @Mapping(target = "version", ignore = true)
     public abstract Ingredient toIngredient(IngredientDTO ingredientDTO);
 
+    @Mapping(target = "product", source = "ingredient.product")
+    @Mapping(target = "name", source = "ingredient.name")
+    @Mapping(target = "quantity", source = "ingredient.quantity")
+    public abstract IngredientDTO toIngredientDTO(Ingredient ingredient);
+
 }
