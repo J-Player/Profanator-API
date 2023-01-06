@@ -16,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.UUID;
 
 import static api.configs.cache.CacheConfig.ITEM_CACHE_NAME;
@@ -27,7 +28,6 @@ import static api.configs.cache.CacheConfig.TTL;
 @CacheConfig(cacheNames = ITEM_CACHE_NAME)
 public class ItemService implements AbstractService<Item> {
 
-    private static final String CLASS_NAME = ItemService.class.getSimpleName();
     private final ItemRepository itemRepository;
     private final ProficiencyService proficiencyService;
     private final CacheService cacheService;
@@ -60,7 +60,7 @@ public class ItemService implements AbstractService<Item> {
     public Flux<Item> findAll() {
         return itemRepository.findAll(Sort.by("id"))
                 .onErrorResume(ex -> {
-                    cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAll");
+                    cacheService.evictCache(ITEM_CACHE_NAME);
                     return Flux.error(ex);
                 })
                 .cache(TTL);
@@ -71,7 +71,12 @@ public class ItemService implements AbstractService<Item> {
         return proficiencyService.findByName(proficiency)
                 .flatMapMany(p -> itemRepository.findAllByProficiencyIgnoreCase(p.getName(), Sort.by("id")))
                 .onErrorResume(ex -> {
-                    cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAllByProficiency", proficiency);
+                    log.error("Ocorreu um erro ao recuperar os Items da proficiency {}: {}", proficiency, ex.getMessage());
+                    StackWalker walker = StackWalker.getInstance();
+                    Optional<String> optional = walker.walk(frames -> frames
+                            .findFirst()
+                            .map(StackWalker.StackFrame::getMethodName));
+                    optional.ifPresent(methodName -> cacheService.evictCache(ITEM_CACHE_NAME, methodName, proficiency));
                     return Flux.error(ex);
                 })
                 .cache(TTL);
@@ -81,12 +86,11 @@ public class ItemService implements AbstractService<Item> {
     @Transactional
     public Mono<Item> save(Item item) {
         return itemRepository.save(item)
-                .doOnSuccess(i -> {
-                    if (i != null) {
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAll");
-                        if (i.getProficiency() != null)
-                            cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAllByProficiency", i.getProficiency());
-                    }
+                .doOnNext(i -> {
+                    log.info("Item salvo com sucesso! ({}).", i);
+                    cacheService.evictCache(ITEM_CACHE_NAME, "findAll");
+                    if (i.getProficiency() != null)
+                        cacheService.evictCache(ITEM_CACHE_NAME, "findAllByProficiency", i.getProficiency());
                 })
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao salvar o item: {}", ex.getMessage());
@@ -102,15 +106,15 @@ public class ItemService implements AbstractService<Item> {
                     item.setUpdatedAt(oldItem.getUpdatedAt());
                     item.setVersion(oldItem.getVersion());
                 })
-                .flatMap(oldItem -> itemRepository.save(item).thenReturn(oldItem))
-                .doOnSuccess(oldItem -> {
-                    if (oldItem != null) {
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findById", oldItem.getId());
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findByName", oldItem.getName());
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAll");
-                        if (oldItem.getProficiency() != null)
-                            cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAllByProficiency", oldItem.getProficiency());
-                    }
+                .flatMap(oldItem -> itemRepository.save(item)
+                        .doOnNext(i -> log.info("Item atualizado com sucesso! {}", i))
+                        .thenReturn(oldItem))
+                .doOnNext(oldItem -> {
+                    cacheService.evictCache(ITEM_CACHE_NAME, "findById", oldItem.getId());
+                    cacheService.evictCache(ITEM_CACHE_NAME, "findByName", oldItem.getName());
+                    cacheService.evictCache(ITEM_CACHE_NAME, "findAll");
+                    if (oldItem.getProficiency() != null)
+                        cacheService.evictCache(ITEM_CACHE_NAME, "findAllByProficiency", oldItem.getProficiency());
                 })
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao atualizar o item (id: {}): {}", item.getId(), ex.getMessage());
@@ -123,14 +127,13 @@ public class ItemService implements AbstractService<Item> {
     public Mono<Void> delete(UUID id) {
         return findById(id)
                 .flatMap(item -> itemRepository.delete(item).thenReturn(item))
-                .doOnSuccess(item -> {
-                    if (item != null) {
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findById", item.getId());
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findByName", item.getName());
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAll");
-                        if (item.getProficiency() != null)
-                            cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAllByProficiency", item.getProficiency());
-                    }
+                .doOnNext(item -> {
+                    log.info("Item excluído com sucesso! ({})", item);
+                    cacheService.evictCache(ITEM_CACHE_NAME, "findById", item.getId());
+                    cacheService.evictCache(ITEM_CACHE_NAME, "findByName", item.getName());
+                    cacheService.evictCache(ITEM_CACHE_NAME, "findAll");
+                    if (item.getProficiency() != null)
+                        cacheService.evictCache(ITEM_CACHE_NAME, "findAllByProficiency", item.getProficiency());
                 })
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao excluir o item (id: {}): {}", id, ex.getMessage());
