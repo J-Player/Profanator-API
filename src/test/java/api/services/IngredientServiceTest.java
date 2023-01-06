@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Ingredient Service Test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class IngredientServiceTest {
 
     @InjectMocks
@@ -42,18 +42,6 @@ class IngredientServiceTest {
     private CacheService cacheService;
 
     private final Ingredient ingredient = IngredientCreator.ingredient();
-
-    @BeforeAll
-    public static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @Order(-1)
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
-    }
 
     @BeforeEach
     void setUp() {
@@ -72,6 +60,17 @@ class IngredientServiceTest {
         BDDMockito.when(itemService.findByName(anyString()))
                 .thenReturn(Mono.just(ItemCreator.item()));
         BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any());
+    }
+
+    @BeforeAll
+    public static void blockHound() {
+        BlockHound.install();
+    }
+
+    @Test
+    @DisplayName("[BlockHound] Check if BlockHound is working")
+    void blockHoundWorks() {
+        BlockHoundTest.test();
     }
 
     @Test

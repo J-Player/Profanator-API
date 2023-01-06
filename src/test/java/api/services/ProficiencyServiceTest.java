@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Proficiency Service Test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class ProficiencyServiceTest {
 
     @InjectMocks
@@ -45,7 +45,6 @@ class ProficiencyServiceTest {
     }
 
     @Test
-    @Order(-1)
     @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
         BlockHoundTest.test();
