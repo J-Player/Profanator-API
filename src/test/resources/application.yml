@@ -4,9 +4,7 @@ spring:
     username: postgres
     password: postgres
 logging:
-  level:
-    org:
-      springframework:
-        test:
-          context:
-            cache: ERROR
+    api:
+      configs: DEBUG
+      services:
+        cache: TRACE
