@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  db:
+    container_name: postgres_container
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: profanatordb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./../src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./../src/main/resources/data.sql:/docker-entrypoint-initdb.d/2_data.sql
+  api:
+    container_name: profanator_api_container
+    image: profanator_api_image
+    restart: always
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    networks:
+      docker-network:
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgres://db:5432/profanatordb
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
+volumes:
+  pgdata:
+networks:
+  docker-network:
+    driver: bridge
