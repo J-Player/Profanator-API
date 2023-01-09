@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@Profile("!dev & !test")
+@Profile("prod")
 @RequiredArgsConstructor
 public class UserService implements ReactiveUserDetailsService, AbstractService<User> {
 

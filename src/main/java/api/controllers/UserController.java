@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 import java.util.UUID;
 
-@Profile("!dev & !test")
+@Profile("prod")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")

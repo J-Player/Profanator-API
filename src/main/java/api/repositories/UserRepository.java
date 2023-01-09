@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Repository
-@Profile("!dev & !test")
+@Profile("prod")
 public interface UserRepository extends ReactiveCrudRepository<User, UUID> {
 
     Mono<User> findByUsername(String username);
