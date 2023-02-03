@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-@Profile("!dev & !test")
+@Profile("prod")
 @RequiredArgsConstructor
 public class UserCallback implements BeforeConvertCallback<User> {
 

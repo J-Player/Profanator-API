@@ -2,6 +2,7 @@ package api.domains;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.*;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Profile("prod")
 @Table("Profanator_User")
 public class User implements UserDetails {
 

@@ -9,12 +9,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-      TZ: 'America/Sao_Paulo'
+      POSTGRES_DB: profanatordb
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./../src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
-      - ./../src/main/resources/data.sql:/docker-entrypoint-initdb.d/2_data.sql
   api:
     container_name: api
     image: profanator_api_image
@@ -26,10 +23,9 @@ services:
     networks:
       profanator-network:
     environment:
-      SPRING_R2DBC_URL: r2dbc:postgres://db:5432/postgres
+      SPRING_R2DBC_URL: r2dbc:postgres://db:5432/profanatordb
       SPRING_R2DBC_USERNAME: postgres
       SPRING_R2DBC_PASSWORD: postgres
-      TZ: 'America/Sao_Paulo'
 volumes:
   pgdata:
 networks:

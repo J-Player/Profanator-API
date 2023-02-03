@@ -48,9 +48,7 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/webjars/**").authenticated()
                 .and()
-                    .formLogin()
-                    .authenticationSuccessHandler(authenticationSuccessHandler())
-                .and()
+                    .formLogin().disable()
                     .httpBasic()
                 .and()
                 .build();
@@ -69,7 +67,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Profile({"dev", "test"})
+    @Profile("!prod")
     protected MapReactiveUserDetailsService userDetailsService() {
         PasswordEncoder passwordEncoder = passwordEncoder();
         UserDetails admin = User

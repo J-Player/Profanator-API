@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Item(
 	id UUID DEFAULT uuid_generate_v4(),
 	proficiency VARCHAR(255),
 	name VARCHAR(255) NOT NULL UNIQUE,
-	qtbyproduction INTEGER NOT NULL CHECK (qtByProduction > 0),
+	qtbyproduction INTEGER NOT NULL CHECK (qtbyproduction > 0),
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	updated_at TIMESTAMPTZ,
 	version INTEGER,
