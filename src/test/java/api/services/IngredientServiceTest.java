@@ -94,27 +94,6 @@ class IngredientServiceTest {
     }
 
     @Test
-    @DisplayName("findByProductAndName | Returns a mono of ingredient when successful")
-    void findByProductAndName() {
-        StepVerifier.create(ingredientService.findByProductAndName("", ""))
-                .expectSubscription()
-                .expectNext(ingredient)
-                .verifyComplete();
-    }
-
-    @Test
-    @DisplayName("findByProductAndName | Returns mono error when ingredient does not exists")
-    void findByProductAndName_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(ingredientRepository.findByProductAndNameAllIgnoreCase(
-                        anyString(), anyString()))
-                .thenReturn(Mono.empty());
-        StepVerifier.create(ingredientService.findByProductAndName("", ""))
-                .expectSubscription()
-                .expectError(ResponseStatusException.class)
-                .verify();
-    }
-
-    @Test
     @DisplayName("findAllByProduct | Returns a flux of ingredient when successful")
     void findAllByProduct() {
         StepVerifier.create(ingredientService.findAllByProduct(""))

@@ -39,8 +39,6 @@ class IngredientControllerTest {
     void setUp() {
         BDDMockito.when(ingredientService.findById(any(UUID.class)))
                 .thenReturn(Mono.just(ingredient));
-        BDDMockito.when(ingredientService.findByProductAndName(anyString(), anyString()))
-                .thenReturn(Mono.just(ingredient));
         BDDMockito.when(ingredientService.findAll())
                 .thenReturn(Flux.just(ingredient));
         BDDMockito.when(ingredientService.findAllByProduct(anyString()))
@@ -68,15 +66,6 @@ class IngredientControllerTest {
     @DisplayName("findById | Returns a ingredient when successful")
     void findById() {
         StepVerifier.create(ingredientController.findById(UUID.randomUUID()))
-                .expectSubscription()
-                .expectNext(ingredient)
-                .verifyComplete();
-    }
-
-    @Test
-    @DisplayName("findByItemAndIngredient | Returns a ingredient when successful")
-    void findByItemAndIngredient() {
-        StepVerifier.create(ingredientController.findByItemAndIngredient("", ""))
                 .expectSubscription()
                 .expectNext(ingredient)
                 .verifyComplete();

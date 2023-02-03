@@ -173,30 +173,6 @@ class IngredientControllerIT {
     @Test
     @Order(9)
     @WithUserDetails
-    @DisplayName("findByItemAndIngredient | Returns a ingredient when successful")
-    void findByItemAndIngredient() {
-        client.get()
-                .uri(PATH_INGREDIENTS.concat("/{item}/{ingredient}"), ingredient.getProduct(), ingredient.getName())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Ingredient.class)
-                .isEqualTo(ingredient);
-    }
-
-    @Test
-    @Order(10)
-    @WithUserDetails
-    @DisplayName("findByItemAndIngredient | Returns 404 error when not found")
-    void findByItemAndIngredient_ReturnsError_WhenNotFound() {
-        client.get()
-                .uri(PATH_INGREDIENTS.concat("/{item}/{ingredient}"), "randomProduct", "randomName")
-                .exchange()
-                .expectStatus().isNotFound();
-    }
-
-    @Test
-    @Order(11)
-    @WithUserDetails
     @DisplayName("listAll | Returns all ingredients when successful")
     void listAll() {
         client.get()
@@ -208,7 +184,7 @@ class IngredientControllerIT {
     }
 
     @Test
-    @Order(12)
+    @Order(10)
     @WithUserDetails
     @DisplayName("listAllByItem | Returns all ingredients of a item when successful")
     void listAllByItem() {
@@ -223,7 +199,7 @@ class IngredientControllerIT {
     }
 
     @Test
-    @Order(13)
+    @Order(11)
     @WithUserDetails(ADMIN_USER)
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
@@ -234,7 +210,7 @@ class IngredientControllerIT {
     }
 
     @Test
-    @Order(14)
+    @Order(12)
     @WithUserDetails
     @DisplayName("delete | Returns 403 error when forbidden user")
     void delete_ReturnsError_WhenForbiddenUser() {
@@ -245,7 +221,7 @@ class IngredientControllerIT {
     }
 
     @Test
-    @Order(15)
+    @Order(13)
     @WithUserDetails(ADMIN_USER)
     @DisplayName("delete | Returns 404 error when not found")
     void delete_ReturnsError_WhenNotFound() {

@@ -36,13 +36,6 @@ public class IngredientController implements AbstractController<Ingredient, Ingr
         return ingredientService.findById(id);
     }
 
-    @GetMapping("/{item}/{ingredient}")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Returns a ingredient by item's name and ingredient's name.")
-    public Mono<Ingredient> findByItemAndIngredient(@PathVariable String item, @PathVariable String ingredient) {
-        return ingredientService.findByProductAndName(item, ingredient);
-    }
-
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns all ingredients.")
