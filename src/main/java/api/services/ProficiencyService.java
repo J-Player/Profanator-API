@@ -6,6 +6,7 @@ import api.services.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,7 @@ public class ProficiencyService implements AbstractService<Proficiency> {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public Mono<Proficiency> save(Proficiency proficiency) {
         return proficiencyRepository.save(proficiency)
                 .doOnNext(p -> {
@@ -80,6 +82,7 @@ public class ProficiencyService implements AbstractService<Proficiency> {
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public Mono<Void> update(Proficiency proficiency) {
         return findById(proficiency.getId())
                 .doOnNext(oldProficiency -> {
@@ -88,13 +91,7 @@ public class ProficiencyService implements AbstractService<Proficiency> {
                     proficiency.setVersion(oldProficiency.getVersion());
                 })
                 .flatMap(oldProficiency -> proficiencyRepository.save(proficiency)
-                        .doOnNext(p -> log.info("Proficiency atualizada com sucesso! {}", p))
-                        .thenReturn(oldProficiency))
-                .doOnNext(oldProficiency -> {
-                    cacheService.evictCache(PROFICIENCY_CACHE_NAME, "findById", oldProficiency.getId());
-                    cacheService.evictCache(PROFICIENCY_CACHE_NAME, "findByName", oldProficiency.getName());
-                    cacheService.evictCache(PROFICIENCY_CACHE_NAME, "findAll");
-                })
+                        .doOnNext(p -> log.info("Proficiency atualizada com sucesso! {}", p)))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao atualizar a Proficiency ({}): {}", proficiency, ex.getMessage());
                     return Mono.error(ex);
@@ -103,15 +100,11 @@ public class ProficiencyService implements AbstractService<Proficiency> {
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public Mono<Void> delete(UUID id) {
         return findById(id)
                 .flatMap(proficiency -> proficiencyRepository.delete(proficiency).thenReturn(proficiency))
-                .doOnNext(proficiency -> {
-                    log.info("Proficiency excluída com sucesso! ({})", proficiency);
-                    cacheService.evictCache(PROFICIENCY_CACHE_NAME, "findById", proficiency.getId());
-                    cacheService.evictCache(PROFICIENCY_CACHE_NAME, "findByName", proficiency.getName());
-                    cacheService.evictCache(PROFICIENCY_CACHE_NAME, "findAll");
-                })
+                .doOnSuccess(proficiency -> log.info("Proficiency excluída com sucesso! ({})", proficiency))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao excluir a Proficiency (id: {}): {}.", id, ex.getMessage());
                     return Mono.error(ex);

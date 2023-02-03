@@ -6,6 +6,7 @@ import api.services.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,6 @@ import static api.configs.cache.CacheConfig.TTL;
 public class IngredientService implements AbstractService<Ingredient> {
 
     private final IngredientRepository ingredientRepository;
-    private final ItemService itemService;
     private final CacheService cacheService;
 
     @Override
@@ -39,22 +39,6 @@ public class IngredientService implements AbstractService<Ingredient> {
                 .switchIfEmpty(monoResponseStatusNotFoundException())
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao recuperar o Ingredient (id = {}): {}", id, ex.getMessage());
-                    return Mono.error(ex);
-                })
-                .cache(item -> TTL, ex -> Duration.ZERO, () -> Duration.ZERO);
-    }
-
-    @Cacheable
-    public Mono<Ingredient> findByProductAndName(String product, String name) {
-        return itemService.findByName(product).zipWith(itemService.findByName(name))
-                .flatMap(items -> {
-                    String p = items.getT1().getName();
-                    String n = items.getT2().getName();
-                    return ingredientRepository.findByProductAndNameAllIgnoreCase(p, n);
-                })
-                .switchIfEmpty(monoResponseStatusNotFoundException())
-                .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao recuperar o Ingredient [product=\"{}\", name=\"{}\"]: {}", product, name, ex.getMessage());
                     return Mono.error(ex);
                 })
                 .cache(item -> TTL, ex -> Duration.ZERO, () -> Duration.ZERO);
@@ -74,8 +58,7 @@ public class IngredientService implements AbstractService<Ingredient> {
 
     @Cacheable
     public Flux<Ingredient> findAllByProduct(String product) {
-        return itemService.findByName(product)
-                .flatMapMany(item -> ingredientRepository.findByProductIgnoreCase(item.getName(), Sort.by("product", "name")))
+        return ingredientRepository.findByProductIgnoreCase(product, Sort.by("product", "name"))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao recuperar os Ingredients do item {}: {}", product, ex.getMessage());
                     StackWalker walker = StackWalker.getInstance();
@@ -90,13 +73,10 @@ public class IngredientService implements AbstractService<Ingredient> {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public Mono<Ingredient> save(Ingredient ingredient) {
         return ingredientRepository.save(ingredient)
-                .doOnNext(i -> {
-                    log.info("Ingredient salvo com sucesso! ({}).", i);
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findAll");
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findAllByProduct", i.getProduct());
-                })
+                .doOnSuccess(i -> log.info("Ingredient salvo com sucesso! ({}).", i))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao salvar o Ingredient: {}", ex.getMessage());
                     return Mono.error(ex);
@@ -104,6 +84,7 @@ public class IngredientService implements AbstractService<Ingredient> {
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public Mono<Void> update(Ingredient ingredient) {
         return findById(ingredient.getId())
                 .doOnNext(oldIngredient -> {
@@ -111,15 +92,8 @@ public class IngredientService implements AbstractService<Ingredient> {
                     ingredient.setUpdatedAt(oldIngredient.getUpdatedAt());
                     ingredient.setVersion(oldIngredient.getVersion());
                 })
-                .flatMap(oldIngredient -> ingredientRepository.save(ingredient)
-                        .doOnNext(i -> log.info("Ingredient atualizado com sucesso! {}", i))
-                        .thenReturn(oldIngredient))
-                .doOnNext(i -> {
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findById", i.getId());
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findByProductAndName", i.getProduct(), i.getName());
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findAll");
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findAllByProduct", i.getProduct());
-                })
+                .flatMap(ingredientRepository::save)
+                .doOnSuccess(i -> log.info("Ingredient atualizado com sucesso! {}", i))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao atualizar o Ingredient (id: {}): {}", ingredient.getId(), ex.getMessage());
                     return Mono.error(ex);
@@ -128,16 +102,11 @@ public class IngredientService implements AbstractService<Ingredient> {
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public Mono<Void> delete(UUID id) {
         return findById(id)
-                .doOnNext(ingredientRepository::delete)
-                .doOnSuccess(ingredient -> {
-                    log.info("Ingredient excluído com sucesso! ({})", ingredient);
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findById", ingredient.getId());
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findByProductAndName", ingredient.getProduct(), ingredient.getName());
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findAll");
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findAllByProduct", ingredient.getProduct());
-                })
+                .flatMap(ingredient -> ingredientRepository.delete(ingredient).thenReturn(ingredient))
+                .doOnSuccess(ingredient -> log.info("Ingredient excluído com sucesso! ({})", ingredient))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao excluir o Ingredient (id: {}): {}", id, ex.getMessage());
                     return Mono.error(ex);
