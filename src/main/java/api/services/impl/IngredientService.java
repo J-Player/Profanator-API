@@ -1,7 +1,8 @@
-package api.services;
+package api.services.impl;
 
 import api.domains.Ingredient;
 import api.repositories.IngredientRepository;
+import api.services.IService;
 import api.services.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ import static api.configs.cache.CacheConfig.TTL;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = INGREDIENT_CACHE_NAME)
-public class IngredientService implements AbstractService<Ingredient> {
+public class IngredientService implements IService<Ingredient> {
 
     private final IngredientRepository ingredientRepository;
     private final CacheService cacheService;

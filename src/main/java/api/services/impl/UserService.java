@@ -1,7 +1,8 @@
-package api.services;
+package api.services.impl;
 
 import api.domains.User;
 import api.repositories.UserRepository;
+import api.services.IService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Service
 @Profile("prod")
 @RequiredArgsConstructor
-public class UserService implements ReactiveUserDetailsService, AbstractService<User> {
+public class UserService implements ReactiveUserDetailsService, IService<User> {
 
     private final UserRepository userRepository;
 

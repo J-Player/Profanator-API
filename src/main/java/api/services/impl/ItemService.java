@@ -1,7 +1,8 @@
-package api.services;
+package api.services.impl;
 
 import api.domains.Item;
 import api.repositories.ItemRepository;
+import api.services.IService;
 import api.services.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ import static api.configs.cache.CacheConfig.TTL;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = ITEM_CACHE_NAME)
-public class ItemService implements AbstractService<Item> {
+public class ItemService implements IService<Item> {
 
     private final ItemRepository itemRepository;
     private final ProficiencyService proficiencyService;

@@ -1,7 +1,8 @@
-package api.services;
+package api.services.impl;
 
 import api.domains.Proficiency;
 import api.repositories.ProficiencyRepository;
+import api.services.IService;
 import api.services.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ import static api.configs.cache.CacheConfig.TTL;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = PROFICIENCY_CACHE_NAME)
-public class ProficiencyService implements AbstractService<Proficiency> {
+public class ProficiencyService implements IService<Proficiency> {
 
     private final ProficiencyRepository proficiencyRepository;
     private final CacheService cacheService;
