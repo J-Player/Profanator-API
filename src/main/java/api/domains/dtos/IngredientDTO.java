@@ -1,18 +1,13 @@
 package api.domains.dtos;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
-@Getter
+@Data
 @Builder
-@RequiredArgsConstructor
-@NoArgsConstructor(force = true)
 public class IngredientDTO {
 
     @NotEmpty(message = "The 'product' cannot be empty or null")

@@ -1,7 +1,10 @@
 package api.domains;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import lombok.*;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Builder;
+import lombok.Data;
+import lombok.With;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -10,7 +13,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
@@ -19,8 +21,6 @@ import java.util.stream.Collectors;
 @Data
 @With
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Profile("prod")
 @Table("Profanator_User")
 public class User implements UserDetails {
