@@ -12,13 +12,11 @@ public abstract class ProficiencyMapper {
     public static final ProficiencyMapper INSTANCE = Mappers.getMapper(ProficiencyMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "name", source = "proficiencyDTO.name")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "version", ignore = true)
     public abstract Proficiency toProficiency(ProficiencyDTO proficiencyDTO);
 
-    @Mapping(target = "name", source = "proficiency.name")
     public abstract ProficiencyDTO toProficiencyDTO(Proficiency proficiency);
 
 }

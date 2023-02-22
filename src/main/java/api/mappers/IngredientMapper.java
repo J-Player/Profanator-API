@@ -12,17 +12,11 @@ public abstract class IngredientMapper {
     public static final IngredientMapper INSTANCE = Mappers.getMapper(IngredientMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "product", source = "ingredientDTO.product")
-    @Mapping(target = "name", source = "ingredientDTO.name")
-    @Mapping(target = "quantity", source = "ingredientDTO.quantity")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "version", ignore = true)
     public abstract Ingredient toIngredient(IngredientDTO ingredientDTO);
 
-    @Mapping(target = "product", source = "ingredient.product")
-    @Mapping(target = "name", source = "ingredient.name")
-    @Mapping(target = "quantity", source = "ingredient.quantity")
     public abstract IngredientDTO toIngredientDTO(Ingredient ingredient);
 
 }
