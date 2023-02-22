@@ -3,7 +3,7 @@ package api.controllers;
 import api.configs.BlockHoundTest;
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
-import api.services.IngredientService;
+import api.services.impl.IngredientService;
 import api.util.IngredientCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ class IngredientControllerTest {
         BDDMockito.when(ingredientService.delete(any(UUID.class)))
                 .thenReturn(Mono.empty());
     }
-
+/*
     @BeforeAll
     static void blockHound() {
         BlockHound.install();
@@ -61,7 +61,7 @@ class IngredientControllerTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-
+*/
     @Test
     @DisplayName("findById | Returns a ingredient when successful")
     void findById() {

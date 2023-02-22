@@ -6,7 +6,7 @@ import api.domains.Proficiency;
 import api.domains.dtos.ItemDTO;
 import api.integration.annotation.IntegrationTest;
 import api.mappers.ItemMapper;
-import api.services.ProficiencyService;
+import api.services.impl.ProficiencyService;
 import api.util.ItemCreator;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

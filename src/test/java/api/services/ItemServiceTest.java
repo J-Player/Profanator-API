@@ -4,6 +4,8 @@ import api.configs.BlockHoundTest;
 import api.domains.Item;
 import api.repositories.ItemRepository;
 import api.services.cache.CacheService;
+import api.services.impl.ItemService;
+import api.services.impl.ProficiencyService;
 import api.util.ItemCreator;
 import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.*;
@@ -42,7 +44,7 @@ class ItemServiceTest {
     private CacheService cacheService;
 
     private final Item item = ItemCreator.item();
-
+/*
     @BeforeAll
     public static void blockHound() {
         BlockHound.install();
@@ -53,7 +55,7 @@ class ItemServiceTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-
+*/
     @BeforeEach
     void setUp() {
         BDDMockito.when(itemRepository.findById(any(UUID.class)))

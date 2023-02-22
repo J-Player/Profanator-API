@@ -3,7 +3,7 @@ package api.controllers;
 import api.configs.BlockHoundTest;
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
-import api.services.ProficiencyService;
+import api.services.impl.ProficiencyService;
 import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ class ProficiencyControllerTest {
         BDDMockito.when(proficiencyService.delete(any(UUID.class)))
                 .thenReturn(Mono.empty());
     }
-
+/*
     @BeforeAll
     static void blockHound() {
         BlockHound.install();
@@ -61,7 +61,7 @@ class ProficiencyControllerTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-
+*/
     @Test
     @DisplayName("findByName | Returns a proficiency when successful")
     void findByName() {

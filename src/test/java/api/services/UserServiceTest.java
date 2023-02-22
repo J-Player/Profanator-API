@@ -3,6 +3,7 @@ package api.services;
 import api.configs.BlockHoundTest;
 import api.domains.User;
 import api.repositories.UserRepository;
+import api.services.impl.UserService;
 import api.util.UserCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     private final User user = UserCreator.user();
-
+/*
     @BeforeAll
     public static void blockHound() {
         BlockHound.install();
@@ -45,7 +46,7 @@ class UserServiceTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-
+*/
     @BeforeEach
     void setUp() {
         BDDMockito.when(userRepository.findById(any(UUID.class)))

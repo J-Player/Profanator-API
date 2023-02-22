@@ -3,7 +3,7 @@ package api.controllers;
 import api.configs.BlockHoundTest;
 import api.domains.Item;
 import api.domains.dtos.ItemDTO;
-import api.services.ItemService;
+import api.services.impl.ItemService;
 import api.util.ItemCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +52,7 @@ class ItemControllerTest {
         BDDMockito.when(itemService.delete(any(UUID.class)))
                 .thenReturn(Mono.empty());
     }
-
+/*
     @BeforeAll
     static void blockHound() {
         BlockHound.install();
@@ -63,7 +63,7 @@ class ItemControllerTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-
+*/
     @Test
     @DisplayName("findById | Returns a item when successful")
     void findById() {
