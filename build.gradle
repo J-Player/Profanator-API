@@ -1,8 +1,12 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.6'
+    id 'org.springframework.boot' version '3.0.2'
     id 'io.spring.dependency-management' version '1.1.0'
 }
+
+group = ''
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 17
 
 repositories {
     mavenCentral()
@@ -24,13 +28,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test' //SPRING TEST
     testImplementation 'org.springframework.security:spring-security-test' //SPRING SECURITY TEST
     testImplementation 'io.projectreactor:reactor-test' //REACTOR TEST
-    testImplementation 'io.projectreactor.tools:blockhound:1.0.6.RELEASE' //BLOCKHOUND
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
+    testImplementation 'io.projectreactor.tools:blockhound:1.0.7.RELEASE' //BLOCKHOUND
 }
 
 bootBuildImage {
