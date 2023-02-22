@@ -1,13 +1,10 @@
 package api.domains.dtos;
 
-import lombok.*;
-
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
-@With
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class ProficiencyDTO {
 

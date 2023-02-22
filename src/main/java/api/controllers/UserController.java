@@ -3,28 +3,30 @@ package api.controllers;
 import api.domains.User;
 import api.domains.dtos.UserDTO;
 import api.mappers.UserMapper;
-import api.services.UserService;
+import api.services.impl.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 import java.util.UUID;
 
+@Profile("prod")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 @Tag(name = "User", description = "Only admin.")
 @SecurityScheme(name = "Basic Authentication", type = SecuritySchemeType.HTTP, scheme = "basic")
 @SecurityRequirement(name = "Basic Authentication")
-public class UserController implements AbstractController<User, UserDTO> {
+public class UserController implements IController<User, UserDTO> {
 
     private final UserService userService;
 

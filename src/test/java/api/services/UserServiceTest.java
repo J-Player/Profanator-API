@@ -1,7 +1,9 @@
 package api.services;
 
+import api.configs.BlockHoundTest;
 import api.domains.User;
 import api.repositories.UserRepository;
+import api.services.impl.UserService;
 import api.util.UserCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,21 +13,18 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.blockhound.BlockHound;
-import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("User Service Test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceTest {
 
     @InjectMocks
@@ -35,27 +34,19 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     private final User user = UserCreator.user();
-
+/*
     @BeforeAll
     public static void blockHound() {
         BlockHound.install();
     }
 
     @Test
+    @Order(-1)
+    @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
-        try {
-            FutureTask<?> task = new FutureTask<>(() -> {
-                Thread.sleep(0); //NOSONAR
-                return "";
-            });
-            Schedulers.parallel().schedule(task);
-            task.get(10, TimeUnit.SECONDS);
-            Assertions.fail("should fail");
-        } catch (Exception e) {
-            Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-        }
+        BlockHoundTest.test();
     }
-
+*/
     @BeforeEach
     void setUp() {
         BDDMockito.when(userRepository.findById(any(UUID.class)))

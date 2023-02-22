@@ -39,7 +39,7 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
         ErrorAttributeOptions errorAttributeOptions = isTraceEnabled(request) ? of(Include.STACK_TRACE) : defaults();
         Map<String, Object> errorAttributesMap = getErrorAttributes(request, errorAttributeOptions);
         Object obj = Optional.ofNullable(errorAttributesMap.get("status")).orElse(500);
-        int status = obj instanceof HttpStatus ? ((HttpStatus) obj).value() : 500;
+        int status = obj instanceof HttpStatus hs ? hs.value() : 500;
         return ServerResponse.status(status)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(errorAttributesMap);

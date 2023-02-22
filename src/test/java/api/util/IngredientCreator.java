@@ -10,8 +10,8 @@ import static java.util.UUID.randomUUID;
 public abstract class IngredientCreator {
 
     private static final UUID ID = randomUUID();
-    private static final String PRODUCT = ItemCreator.NAME;
-    private static final String NAME = ItemCreator.NAME;
+    private static final String PRODUCT = ItemCreator.NAME.concat("_1");
+    private static final String NAME = ItemCreator.NAME.concat("_2");
     private static final int QUANTITY = 1;
 
     public static Ingredient ingredient() {

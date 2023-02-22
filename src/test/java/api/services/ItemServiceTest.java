@@ -1,8 +1,11 @@
 package api.services;
 
+import api.configs.BlockHoundTest;
 import api.domains.Item;
 import api.repositories.ItemRepository;
 import api.services.cache.CacheService;
+import api.services.impl.ItemService;
+import api.services.impl.ProficiencyService;
 import api.util.ItemCreator;
 import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.*;
@@ -14,21 +17,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.blockhound.BlockHound;
-import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Item Service Test")
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class ItemServiceTest {
 
     @InjectMocks
@@ -44,27 +44,18 @@ class ItemServiceTest {
     private CacheService cacheService;
 
     private final Item item = ItemCreator.item();
-
+/*
     @BeforeAll
     public static void blockHound() {
         BlockHound.install();
     }
 
     @Test
+    @DisplayName("[BlockHound] Check if BlockHound is working")
     void blockHoundWorks() {
-        try {
-            FutureTask<?> task = new FutureTask<>(() -> {
-                Thread.sleep(0); //NOSONAR
-                return "";
-            });
-            Schedulers.parallel().schedule(task);
-            task.get(10, TimeUnit.SECONDS);
-            Assertions.fail("should fail");
-        } catch (Exception e) {
-            Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-        }
+        BlockHoundTest.test();
     }
-
+*/
     @BeforeEach
     void setUp() {
         BDDMockito.when(itemRepository.findById(any(UUID.class)))

@@ -1,11 +1,13 @@
-package api.services;
+package api.services.impl;
 
 import api.domains.Item;
 import api.repositories.ItemRepository;
+import api.services.IService;
 import api.services.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.UUID;
 
 import static api.configs.cache.CacheConfig.ITEM_CACHE_NAME;
@@ -25,9 +28,8 @@ import static api.configs.cache.CacheConfig.TTL;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = ITEM_CACHE_NAME)
-public class ItemService implements AbstractService<Item> {
+public class ItemService implements IService<Item> {
 
-    private static final String CLASS_NAME = ItemService.class.getSimpleName();
     private final ItemRepository itemRepository;
     private final ProficiencyService proficiencyService;
     private final CacheService cacheService;
@@ -60,7 +62,7 @@ public class ItemService implements AbstractService<Item> {
     public Flux<Item> findAll() {
         return itemRepository.findAll(Sort.by("id"))
                 .onErrorResume(ex -> {
-                    cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAll");
+                    cacheService.evictCache(ITEM_CACHE_NAME);
                     return Flux.error(ex);
                 })
                 .cache(TTL);
@@ -71,7 +73,12 @@ public class ItemService implements AbstractService<Item> {
         return proficiencyService.findByName(proficiency)
                 .flatMapMany(p -> itemRepository.findAllByProficiencyIgnoreCase(p.getName(), Sort.by("id")))
                 .onErrorResume(ex -> {
-                    cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAllByProficiency", proficiency);
+                    log.error("Ocorreu um erro ao recuperar os Items da proficiency {}: {}", proficiency, ex.getMessage());
+                    StackWalker walker = StackWalker.getInstance();
+                    Optional<String> optional = walker.walk(frames -> frames
+                            .findFirst()
+                            .map(StackWalker.StackFrame::getMethodName));
+                    optional.ifPresent(methodName -> cacheService.evictCache(ITEM_CACHE_NAME, methodName, proficiency));
                     return Flux.error(ex);
                 })
                 .cache(TTL);
@@ -79,15 +86,10 @@ public class ItemService implements AbstractService<Item> {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public Mono<Item> save(Item item) {
         return itemRepository.save(item)
-                .doOnSuccess(i -> {
-                    if (i != null) {
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAll");
-                        if (i.getProficiency() != null)
-                            cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAllByProficiency", i.getProficiency());
-                    }
-                })
+                .doOnNext(i -> log.info("Item salvo com sucesso! ({}).", i))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao salvar o item: {}", ex.getMessage());
                     return Mono.error(ex);
@@ -95,6 +97,7 @@ public class ItemService implements AbstractService<Item> {
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public Mono<Void> update(Item item) {
         return findById(item.getId())
                 .doOnNext(oldItem -> {
@@ -102,16 +105,8 @@ public class ItemService implements AbstractService<Item> {
                     item.setUpdatedAt(oldItem.getUpdatedAt());
                     item.setVersion(oldItem.getVersion());
                 })
-                .flatMap(oldItem -> itemRepository.save(item).thenReturn(oldItem))
-                .doOnSuccess(oldItem -> {
-                    if (oldItem != null) {
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findById", oldItem.getId());
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findByName", oldItem.getName());
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAll");
-                        if (oldItem.getProficiency() != null)
-                            cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAllByProficiency", oldItem.getProficiency());
-                    }
-                })
+                .flatMap(itemRepository::save)
+                .doOnNext(i -> log.info("Item atualizado com sucesso! {}", i))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao atualizar o item (id: {}): {}", item.getId(), ex.getMessage());
                     return Mono.error(ex);
@@ -120,18 +115,11 @@ public class ItemService implements AbstractService<Item> {
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public Mono<Void> delete(UUID id) {
         return findById(id)
                 .flatMap(item -> itemRepository.delete(item).thenReturn(item))
-                .doOnSuccess(item -> {
-                    if (item != null) {
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findById", item.getId());
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findByName", item.getName());
-                        cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAll");
-                        if (item.getProficiency() != null)
-                            cacheService.evictCache(CLASS_NAME, ITEM_CACHE_NAME, "findAllByProficiency", item.getProficiency());
-                    }
-                })
+                .doOnSuccess(item -> log.info("Item excluído com sucesso! ({})", item))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao excluir o item (id: {}): {}", id, ex.getMessage());
                     return Mono.error(ex);

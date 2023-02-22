@@ -12,12 +12,11 @@ public abstract class ItemMapper {
     public static final ItemMapper INSTANCE = Mappers.getMapper(ItemMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "proficiency", source = "itemDTO.proficiency")
-    @Mapping(target = "name", source = "itemDTO.name")
-    @Mapping(target = "qtByProduction", source = "itemDTO.qtByProduction")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "version", ignore = true)
     public abstract Item toItem(ItemDTO itemDTO);
+
+    public abstract ItemDTO toItemDTO(Item item);
 
 }

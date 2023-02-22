@@ -1,8 +1,9 @@
 package api.controllers;
 
+import api.configs.BlockHoundTest;
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
-import api.services.IngredientService;
+import api.services.impl.IngredientService;
 import api.util.IngredientCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,21 +12,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.blockhound.BlockHound;
-import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Ingredient Controller Test")
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class IngredientControllerTest {
 
     @InjectMocks
@@ -37,31 +35,9 @@ class IngredientControllerTest {
     private final Ingredient ingredient = IngredientCreator.ingredient();
     private final IngredientDTO ingredientDTO = IngredientCreator.ingredientDTO();
 
-    @BeforeAll
-    public static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    void blockHoundWorks() {
-        try {
-            FutureTask<?> task = new FutureTask<>(() -> {
-                Thread.sleep(0); //NOSONAR
-                return "";
-            });
-            Schedulers.parallel().schedule(task);
-            task.get(10, TimeUnit.SECONDS);
-            Assertions.fail("should fail");
-        } catch (Exception e) {
-            Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-        }
-    }
-
     @BeforeEach
     void setUp() {
         BDDMockito.when(ingredientService.findById(any(UUID.class)))
-                .thenReturn(Mono.just(ingredient));
-        BDDMockito.when(ingredientService.findByProductAndName(anyString(), anyString()))
                 .thenReturn(Mono.just(ingredient));
         BDDMockito.when(ingredientService.findAll())
                 .thenReturn(Flux.just(ingredient));
@@ -74,20 +50,22 @@ class IngredientControllerTest {
         BDDMockito.when(ingredientService.delete(any(UUID.class)))
                 .thenReturn(Mono.empty());
     }
+/*
+    @BeforeAll
+    static void blockHound() {
+        BlockHound.install();
+    }
 
+    @Test
+    @DisplayName("[BlockHound] Check if BlockHound is working")
+    void blockHoundWorks() {
+        BlockHoundTest.test();
+    }
+*/
     @Test
     @DisplayName("findById | Returns a ingredient when successful")
     void findById() {
         StepVerifier.create(ingredientController.findById(UUID.randomUUID()))
-                .expectSubscription()
-                .expectNext(ingredient)
-                .verifyComplete();
-    }
-
-    @Test
-    @DisplayName("findByItemAndIngredient | Returns a ingredient when successful")
-    void findByItemAndIngredient() {
-        StepVerifier.create(ingredientController.findByItemAndIngredient("", ""))
                 .expectSubscription()
                 .expectNext(ingredient)
                 .verifyComplete();

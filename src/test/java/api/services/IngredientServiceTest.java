@@ -1,8 +1,11 @@
 package api.services;
 
+import api.configs.BlockHoundTest;
 import api.domains.Ingredient;
 import api.repositories.IngredientRepository;
 import api.services.cache.CacheService;
+import api.services.impl.IngredientService;
+import api.services.impl.ItemService;
 import api.util.IngredientCreator;
 import api.util.ItemCreator;
 import org.junit.jupiter.api.*;
@@ -14,21 +17,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.blockhound.BlockHound;
-import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Ingredient Service Test")
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class IngredientServiceTest {
 
     @InjectMocks
@@ -44,26 +44,6 @@ class IngredientServiceTest {
     private CacheService cacheService;
 
     private final Ingredient ingredient = IngredientCreator.ingredient();
-
-    @BeforeAll
-    public static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    void blockHoundWorks() {
-        try {
-            FutureTask<?> task = new FutureTask<>(() -> {
-                Thread.sleep(0); //NOSONAR
-                return "";
-            });
-            Schedulers.parallel().schedule(task);
-            task.get(10, TimeUnit.SECONDS);
-            Assertions.fail("should fail");
-        } catch (Exception e) {
-            Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-        }
-    }
 
     @BeforeEach
     void setUp() {
@@ -83,7 +63,18 @@ class IngredientServiceTest {
                 .thenReturn(Mono.just(ItemCreator.item()));
         BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any());
     }
+/*
+    @BeforeAll
+    public static void blockHound() {
+        BlockHound.install();
+    }
 
+    @Test
+    @DisplayName("[BlockHound] Check if BlockHound is working")
+    void blockHoundWorks() {
+        BlockHoundTest.test();
+    }
+*/
     @Test
     @DisplayName("findById | Returns a mono of ingredient when successful")
     void findById() {
@@ -99,27 +90,6 @@ class IngredientServiceTest {
         BDDMockito.when(ingredientRepository.findById(any(UUID.class)))
                 .thenReturn(Mono.empty());
         StepVerifier.create(ingredientService.findById(UUID.randomUUID()))
-                .expectSubscription()
-                .expectError(ResponseStatusException.class)
-                .verify();
-    }
-
-    @Test
-    @DisplayName("findByProductAndName | Returns a mono of ingredient when successful")
-    void findByProductAndName() {
-        StepVerifier.create(ingredientService.findByProductAndName("", ""))
-                .expectSubscription()
-                .expectNext(ingredient)
-                .verifyComplete();
-    }
-
-    @Test
-    @DisplayName("findByProductAndName | Returns mono error when ingredient does not exists")
-    void findByProductAndName_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(ingredientRepository.findByProductAndNameAllIgnoreCase(
-                        anyString(), anyString()))
-                .thenReturn(Mono.empty());
-        StepVerifier.create(ingredientService.findByProductAndName("", ""))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

@@ -1,14 +1,13 @@
 package api.domains.dtos;
 
-import lombok.*;
-
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.context.annotation.Profile;
 
 @Data
-@With
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@Profile("prod")
 public class UserDTO {
 
     @NotEmpty(message = "The 'username' cannot be empty or null")
