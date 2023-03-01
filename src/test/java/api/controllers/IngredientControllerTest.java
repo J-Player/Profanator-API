@@ -50,7 +50,7 @@ class IngredientControllerTest {
         BDDMockito.when(ingredientService.delete(any(UUID.class)))
                 .thenReturn(Mono.empty());
     }
-/*
+
     @BeforeAll
     static void blockHound() {
         BlockHound.install();
@@ -61,7 +61,7 @@ class IngredientControllerTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-*/
+
     @Test
     @DisplayName("findById | Returns a ingredient when successful")
     void findById() {

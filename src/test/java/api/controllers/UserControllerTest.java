@@ -34,7 +34,7 @@ class UserControllerTest {
 
     private final User user = UserCreator.user();
     private final UserDTO userDTO = UserCreator.userDTO();
-/*
+
     @BeforeAll
     public static void blockHound() {
         BlockHound.install();
@@ -46,7 +46,7 @@ class UserControllerTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-*/
+
     @BeforeEach
     void setUp() {
         BDDMockito.when(userService.findById(any(UUID.class)))

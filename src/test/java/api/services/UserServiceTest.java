@@ -34,7 +34,7 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     private final User user = UserCreator.user();
-/*
+
     @BeforeAll
     public static void blockHound() {
         BlockHound.install();
@@ -46,7 +46,7 @@ class UserServiceTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-*/
+
     @BeforeEach
     void setUp() {
         BDDMockito.when(userRepository.findById(any(UUID.class)))

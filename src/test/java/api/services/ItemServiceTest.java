@@ -44,7 +44,7 @@ class ItemServiceTest {
     private CacheService cacheService;
 
     private final Item item = ItemCreator.item();
-/*
+
     @BeforeAll
     public static void blockHound() {
         BlockHound.install();
@@ -55,7 +55,7 @@ class ItemServiceTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-*/
+
     @BeforeEach
     void setUp() {
         BDDMockito.when(itemRepository.findById(any(UUID.class)))

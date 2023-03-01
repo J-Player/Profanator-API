@@ -52,7 +52,7 @@ class ItemControllerTest {
         BDDMockito.when(itemService.delete(any(UUID.class)))
                 .thenReturn(Mono.empty());
     }
-/*
+
     @BeforeAll
     static void blockHound() {
         BlockHound.install();
@@ -63,7 +63,7 @@ class ItemControllerTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-*/
+
     @Test
     @DisplayName("findById | Returns a item when successful")
     void findById() {

@@ -50,7 +50,7 @@ class ProficiencyControllerTest {
         BDDMockito.when(proficiencyService.delete(any(UUID.class)))
                 .thenReturn(Mono.empty());
     }
-/*
+
     @BeforeAll
     static void blockHound() {
         BlockHound.install();
@@ -61,7 +61,7 @@ class ProficiencyControllerTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-*/
+
     @Test
     @DisplayName("findByName | Returns a proficiency when successful")
     void findByName() {

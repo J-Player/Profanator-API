@@ -39,7 +39,7 @@ class ProficiencyServiceTest {
     private CacheService cacheService;
 
     private final Proficiency proficiency = ProficiencyCreator.proficiency();
-/*
+
     @BeforeAll
     static void blockHound() {
         BlockHound.install();
@@ -50,7 +50,7 @@ class ProficiencyServiceTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-*/
+
     @BeforeEach
     void setUp() {
         BDDMockito.when(proficiencyRepository.findByNameIgnoreCase(anyString()))

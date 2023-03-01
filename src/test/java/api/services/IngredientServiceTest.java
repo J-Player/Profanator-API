@@ -63,7 +63,7 @@ class IngredientServiceTest {
                 .thenReturn(Mono.just(ItemCreator.item()));
         BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any());
     }
-/*
+
     @BeforeAll
     public static void blockHound() {
         BlockHound.install();
@@ -74,7 +74,7 @@ class IngredientServiceTest {
     void blockHoundWorks() {
         BlockHoundTest.test();
     }
-*/
+
     @Test
     @DisplayName("findById | Returns a mono of ingredient when successful")
     void findById() {
