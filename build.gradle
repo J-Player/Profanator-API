@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.0'
 }
 
-group = ''
+group = 'api'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 17
 
@@ -36,5 +36,6 @@ bootBuildImage {
 }
 
 test {
+    jvmArgs = ['-XX:+AllowRedefinitionToAddDeleteMethods']
     useJUnitPlatform()
 }
