@@ -2,7 +2,7 @@ package api.configs.cache;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.interceptor.KeyGenerator;
@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @Configuration
 @EnableCaching
-public class CacheConfig extends CachingConfigurerSupport {
+public class CacheConfig implements CachingConfigurer {
 
     public static final String PROFICIENCY_CACHE_NAME = "proficiencies";
     public static final String ITEM_CACHE_NAME = "items";
