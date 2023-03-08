@@ -18,7 +18,7 @@ Exemplo: http://localhost:8080/swagger-ui.html.
 Como o Profane ainda não tem uma API para desenvolvedores, foi necessário criar todos os dados (itens) da API
 manualmente e adiciona-los num **banco de dados provisório**.
 
-Atualmente, com a versão **Pré-Alpha** do Profane, há um total de **184 itens** cadastrados neste banco de dados.
+Atualmente, com a versão **Pré-Alpha** do Profane, há um total de **183 itens** cadastrados neste banco de dados.
 
 `Nota: O Profane ainda está em desenvolvimento, portanto os dados estão sujeitos à mudanças.`
 
