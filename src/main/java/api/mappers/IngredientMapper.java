@@ -7,16 +7,16 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
-public abstract class IngredientMapper {
+public interface IngredientMapper {
 
-    public static final IngredientMapper INSTANCE = Mappers.getMapper(IngredientMapper.class);
+    IngredientMapper INSTANCE = Mappers.getMapper(IngredientMapper.class);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "version", ignore = true)
-    public abstract Ingredient toIngredient(IngredientDTO ingredientDTO);
+    Ingredient toIngredient(IngredientDTO ingredientDTO);
 
-    public abstract IngredientDTO toIngredientDTO(Ingredient ingredient);
+    IngredientDTO toIngredientDTO(Ingredient ingredient);
 
 }
