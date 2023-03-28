@@ -29,6 +29,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test' //SPRING SECURITY TEST
     testImplementation 'io.projectreactor:reactor-test' //REACTOR TEST
     testImplementation 'io.projectreactor.tools:blockhound:1.0.7.RELEASE' //BLOCKHOUND
+    testRuntimeOnly 'io.r2dbc:r2dbc-h2'
 }
 
 bootBuildImage {
