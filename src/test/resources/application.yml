@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:h2:mem:///testdb?options=DB_CLOSE_DELAY=-1
+    url: r2dbc:h2:mem:///testdb?options=MODE=PostgreSQL;DB_CLOSE_DELAY=-1
     username: sa
     password:
 logging:
