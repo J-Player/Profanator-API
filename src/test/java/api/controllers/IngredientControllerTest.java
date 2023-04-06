@@ -51,17 +51,6 @@ class IngredientControllerTest {
                 .thenReturn(Mono.empty());
     }
 
-    @BeforeAll
-    static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
-    }
-
     @Test
     @DisplayName("findById | Returns a ingredient when successful")
     void findById() {

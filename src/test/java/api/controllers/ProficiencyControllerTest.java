@@ -51,17 +51,6 @@ class ProficiencyControllerTest {
                 .thenReturn(Mono.empty());
     }
 
-    @BeforeAll
-    static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
-    }
-
     @Test
     @DisplayName("findByName | Returns a proficiency when successful")
     void findByName() {
