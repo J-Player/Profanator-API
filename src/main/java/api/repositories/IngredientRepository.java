@@ -8,11 +8,9 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @Repository
-public interface IngredientRepository extends ReactiveCrudRepository<Ingredient, UUID>,
-        ReactiveSortingRepository<Ingredient, UUID> {
+public interface IngredientRepository extends ReactiveCrudRepository<Ingredient, Long>,
+        ReactiveSortingRepository<Ingredient, Long> {
 
     Mono<Ingredient> findByProductAndNameAllIgnoreCase(String product, String name);
 

@@ -8,11 +8,9 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @Repository
-public interface ItemRepository extends ReactiveCrudRepository<Item, UUID>,
-        ReactiveSortingRepository<Item, UUID> {
+public interface ItemRepository extends ReactiveCrudRepository<Item, Long>,
+        ReactiveSortingRepository<Item, Long> {
 
     Mono<Item> findByNameIgnoreCase(String name);
 
