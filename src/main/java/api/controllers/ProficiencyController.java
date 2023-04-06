@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/proficiencies")
@@ -32,7 +30,7 @@ public class ProficiencyController implements IController<Proficiency, Proficien
     @GetMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns a proficiency by ID.")
-    public Mono<Proficiency> findById(@PathVariable UUID id) {
+    public Mono<Proficiency> findById(@PathVariable Long id) {
         return proficiencyService.findById(id);
     }
 
@@ -63,7 +61,7 @@ public class ProficiencyController implements IController<Proficiency, Proficien
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a proficiency in the database.")
-    public Mono<Void> update(@PathVariable UUID id, @RequestBody @Valid ProficiencyDTO proficiencyDTO) {
+    public Mono<Void> update(@PathVariable Long id, @RequestBody @Valid ProficiencyDTO proficiencyDTO) {
         Proficiency proficiency = ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO);
         return proficiencyService.update(proficiency.withId(id));
     }
@@ -72,7 +70,7 @@ public class ProficiencyController implements IController<Proficiency, Proficien
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletes a proficiency in the database.")
-    public Mono<Void> delete(@PathVariable UUID id) {
+    public Mono<Void> delete(@PathVariable Long id) {
         return proficiencyService.delete(id);
     }
 

@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @Profile("prod")
 @RequiredArgsConstructor
 @RestController
@@ -34,7 +32,7 @@ public class UserController implements IController<User, UserDTO> {
     @GetMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns a user by ID.")
-    public Mono<User> findById(@PathVariable UUID id) {
+    public Mono<User> findById(@PathVariable Long id) {
         return userService.findById(id);
     }
 
@@ -65,7 +63,7 @@ public class UserController implements IController<User, UserDTO> {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a user in the database.")
-    public Mono<Void> update(@PathVariable UUID id, @RequestBody @Valid UserDTO userDTO) {
+    public Mono<Void> update(@PathVariable Long id, @RequestBody @Valid UserDTO userDTO) {
         User user = UserMapper.INSTANCE.toUser(userDTO);
         return userService.update(user.withId(id));
     }
@@ -74,7 +72,7 @@ public class UserController implements IController<User, UserDTO> {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletes a user in the database.")
-    public Mono<Void> delete(@PathVariable UUID id) {
+    public Mono<Void> delete(@PathVariable Long id) {
         return userService.delete(id);
     }
 

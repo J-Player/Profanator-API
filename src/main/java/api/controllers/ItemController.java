@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/items")
@@ -32,7 +30,7 @@ public class ItemController implements IController<Item, ItemDTO> {
     @GetMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns a item by ID.")
-    public Mono<Item> findById(@PathVariable UUID id) {
+    public Mono<Item> findById(@PathVariable Long id) {
         return itemService.findById(id);
     }
 
@@ -63,7 +61,7 @@ public class ItemController implements IController<Item, ItemDTO> {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a item in the database.")
-    public Mono<Void> update(@PathVariable UUID id, @RequestBody @Valid ItemDTO itemDTO) {
+    public Mono<Void> update(@PathVariable Long id, @RequestBody @Valid ItemDTO itemDTO) {
         Item item = ItemMapper.INSTANCE.toItem(itemDTO);
         return itemService.update(item.withId(id));
     }
@@ -72,7 +70,7 @@ public class ItemController implements IController<Item, ItemDTO> {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletes a item in the database.")
-    public Mono<Void> delete(@PathVariable UUID id) {
+    public Mono<Void> delete(@PathVariable Long id) {
         return itemService.delete(id);
     }
 

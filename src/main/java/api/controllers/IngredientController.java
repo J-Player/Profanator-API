@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/ingredients")
@@ -32,7 +30,7 @@ public class IngredientController implements IController<Ingredient, IngredientD
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns a ingredient by id.")
-    public Mono<Ingredient> findById(@PathVariable UUID id) {
+    public Mono<Ingredient> findById(@PathVariable Long id) {
         return ingredientService.findById(id);
     }
 
@@ -56,7 +54,7 @@ public class IngredientController implements IController<Ingredient, IngredientD
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a ingredient in the database.")
-    public Mono<Void> update(@PathVariable UUID id, @RequestBody @Valid IngredientDTO ingredientDTO) {
+    public Mono<Void> update(@PathVariable Long id, @RequestBody @Valid IngredientDTO ingredientDTO) {
         Ingredient ingredient = IngredientMapper.INSTANCE.toIngredient(ingredientDTO);
         return ingredientService.update(ingredient.withId(id));
     }
@@ -65,7 +63,7 @@ public class IngredientController implements IController<Ingredient, IngredientD
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletes a ingredient in the database.")
-    public Mono<Void> delete(@PathVariable UUID id) {
+    public Mono<Void> delete(@PathVariable Long id) {
         return ingredientService.delete(id);
     }
 
