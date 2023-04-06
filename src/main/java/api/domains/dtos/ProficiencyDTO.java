@@ -1,11 +1,13 @@
 package api.domains.dtos;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@With
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProficiencyDTO {
 
     @NotEmpty(message = "The 'name' cannot be empty or null")
