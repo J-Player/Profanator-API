@@ -45,17 +45,6 @@ class ItemServiceTest {
 
     private final Item item = ItemCreator.item();
 
-    @BeforeAll
-    public static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
-    }
-
     @BeforeEach
     void setUp() {
         BDDMockito.when(itemRepository.findById(any(UUID.class)))

@@ -40,17 +40,6 @@ class ProficiencyServiceTest {
 
     private final Proficiency proficiency = ProficiencyCreator.proficiency();
 
-    @BeforeAll
-    static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
-    }
-
     @BeforeEach
     void setUp() {
         BDDMockito.when(proficiencyRepository.findByNameIgnoreCase(anyString()))

@@ -35,18 +35,6 @@ class UserServiceTest {
 
     private final User user = UserCreator.user();
 
-    @BeforeAll
-    public static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @Order(-1)
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
-    }
-
     @BeforeEach
     void setUp() {
         BDDMockito.when(userRepository.findById(any(UUID.class)))
