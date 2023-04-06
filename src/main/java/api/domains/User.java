@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 public class User implements UserDetails {
 
     @Id
-    private UUID id;
+    private Long id;
     @NotEmpty(message = "The 'username' cannot be empty or null")
     private String username;
     @NotEmpty(message = "The 'password' cannot be empty or null")

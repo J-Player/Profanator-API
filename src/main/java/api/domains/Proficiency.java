@@ -12,7 +12,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @With
@@ -21,7 +20,7 @@ import java.util.UUID;
 public class Proficiency {
 
     @Id
-    private UUID id;
+    private Long id;
 
     @NotEmpty(message = "The 'name' cannot be empty or null")
     private String name;

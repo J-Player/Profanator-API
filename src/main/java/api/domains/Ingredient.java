@@ -3,9 +3,7 @@ package api.domains;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
-import lombok.With;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,7 +12,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @With
@@ -23,7 +20,7 @@ import java.util.UUID;
 public class Ingredient {
 
     @Id
-    private UUID id;
+    private Long id;
 
     @NotEmpty(message = "The 'product' cannot be empty or null")
     private String product;
