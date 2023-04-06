@@ -3,11 +3,9 @@ package api.services;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 public interface IService<T> {
 
-    Mono<T> findById(UUID id);
+    Mono<T> findById(Long id);
 
     Flux<T> findAll();
 
@@ -15,6 +13,6 @@ public interface IService<T> {
 
     Mono<Void> update(T t);
 
-    Mono<Void> delete(UUID id);
+    Mono<Void> delete(Long id);
 
 }

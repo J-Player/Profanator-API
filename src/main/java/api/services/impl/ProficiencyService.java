@@ -18,7 +18,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.UUID;
 
 import static api.configs.cache.CacheConfig.PROFICIENCY_CACHE_NAME;
 import static api.configs.cache.CacheConfig.TTL;
@@ -34,13 +33,9 @@ public class ProficiencyService implements IService<Proficiency> {
 
     @Override
     @Cacheable
-    public Mono<Proficiency> findById(UUID id) {
+    public Mono<Proficiency> findById(Long id) {
         return proficiencyRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException(null))
-                .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao recuperar a Proficiency (id = {}): {}", id, ex.getMessage());
-                    return Mono.error(ex);
-                })
                 .cache(proficiency -> TTL, ex -> Duration.ZERO, () -> Duration.ZERO);
     }
 
@@ -102,7 +97,7 @@ public class ProficiencyService implements IService<Proficiency> {
 
     @Override
     @CacheEvict(allEntries = true)
-    public Mono<Void> delete(UUID id) {
+    public Mono<Void> delete(Long id) {
         return findById(id)
                 .flatMap(proficiency -> proficiencyRepository.delete(proficiency).thenReturn(proficiency))
                 .doOnSuccess(proficiency -> log.info("Proficiency excluída com sucesso! ({})", proficiency))

@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.UUID;
 
 import static api.configs.cache.CacheConfig.INGREDIENT_CACHE_NAME;
 import static api.configs.cache.CacheConfig.TTL;
@@ -35,7 +34,7 @@ public class IngredientService implements IService<Ingredient> {
 
     @Override
     @Cacheable
-    public Mono<Ingredient> findById(UUID id) {
+    public Mono<Ingredient> findById(Long id) {
         return ingredientRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException())
                 .onErrorResume(ex -> {
@@ -85,6 +84,7 @@ public class IngredientService implements IService<Ingredient> {
     }
 
     @Override
+    @Transactional
     @CacheEvict(allEntries = true)
     public Mono<Void> update(Ingredient ingredient) {
         return findById(ingredient.getId())
@@ -104,7 +104,7 @@ public class IngredientService implements IService<Ingredient> {
 
     @Override
     @CacheEvict(allEntries = true)
-    public Mono<Void> delete(UUID id) {
+    public Mono<Void> delete(Long id) {
         return findById(id)
                 .flatMap(ingredient -> ingredientRepository.delete(ingredient).thenReturn(ingredient))
                 .doOnSuccess(ingredient -> log.info("Ingredient excluído com sucesso! ({})", ingredient))

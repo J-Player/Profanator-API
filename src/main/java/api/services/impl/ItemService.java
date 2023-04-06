@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.UUID;
 
 import static api.configs.cache.CacheConfig.ITEM_CACHE_NAME;
 import static api.configs.cache.CacheConfig.TTL;
@@ -36,7 +35,7 @@ public class ItemService implements IService<Item> {
 
     @Override
     @Cacheable
-    public Mono<Item> findById(UUID id) {
+    public Mono<Item> findById(Long id) {
         return itemRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException(null))
                 .onErrorResume(ex -> {
@@ -97,13 +96,15 @@ public class ItemService implements IService<Item> {
     }
 
     @Override
+    @Transactional
     @CacheEvict(allEntries = true)
     public Mono<Void> update(Item item) {
         return findById(item.getId())
-                .doOnNext(oldItem -> {
+                .map(oldItem -> {
                     item.setCreatedAt(oldItem.getCreatedAt());
                     item.setUpdatedAt(oldItem.getUpdatedAt());
                     item.setVersion(oldItem.getVersion());
+                    return item;
                 })
                 .flatMap(itemRepository::save)
                 .doOnNext(i -> log.info("Item atualizado com sucesso! {}", i))
@@ -116,7 +117,7 @@ public class ItemService implements IService<Item> {
 
     @Override
     @CacheEvict(allEntries = true)
-    public Mono<Void> delete(UUID id) {
+    public Mono<Void> delete(Long id) {
         return findById(id)
                 .flatMap(item -> itemRepository.delete(item).thenReturn(item))
                 .doOnSuccess(item -> log.info("Item excluído com sucesso! ({})", item))

@@ -14,8 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @Slf4j
 @Service
 @Profile("prod")
@@ -31,7 +29,7 @@ public class UserService implements ReactiveUserDetailsService, IService<User> {
     }
 
     @Override
-    public Mono<User> findById(UUID id) {
+    public Mono<User> findById(Long id) {
         return userRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException(null))
                 .onErrorResume(ex -> {
@@ -64,7 +62,7 @@ public class UserService implements ReactiveUserDetailsService, IService<User> {
     }
 
     @Override
-    public Mono<Void> delete(UUID id) {
+    public Mono<Void> delete(Long id) {
         return findById(id)
                 .flatMap(userRepository::delete);
     }
