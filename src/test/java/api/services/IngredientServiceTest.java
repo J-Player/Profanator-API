@@ -1,6 +1,5 @@
 package api.services;
 
-import api.configs.BlockHoundTest;
 import api.domains.Ingredient;
 import api.repositories.IngredientRepository;
 import api.services.cache.CacheService;
@@ -16,19 +15,15 @@ import org.mockito.Mock;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Ingredient Service Test")
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class IngredientServiceTest {
 
     @InjectMocks
@@ -47,7 +42,7 @@ class IngredientServiceTest {
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(ingredientRepository.findById(any(UUID.class)))
+        BDDMockito.when(ingredientRepository.findById(anyLong()))
                 .thenReturn(Mono.just(ingredient));
         BDDMockito.when(ingredientRepository.findByProductAndNameAllIgnoreCase(anyString(), anyString()))
                 .thenReturn(Mono.just(ingredient));
@@ -67,7 +62,7 @@ class IngredientServiceTest {
     @Test
     @DisplayName("findById | Returns a mono of ingredient when successful")
     void findById() {
-        StepVerifier.create(ingredientService.findById(UUID.randomUUID()))
+        StepVerifier.create(ingredientService.findById(1L))
                 .expectSubscription()
                 .expectNext(ingredient)
                 .verifyComplete();
@@ -76,9 +71,9 @@ class IngredientServiceTest {
     @Test
     @DisplayName("findById | Returns a mono error when ingredient does not exists")
     void findById_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(ingredientRepository.findById(any(UUID.class)))
+        BDDMockito.when(ingredientRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(ingredientService.findById(UUID.randomUUID()))
+        StepVerifier.create(ingredientService.findById(1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -122,7 +117,7 @@ class IngredientServiceTest {
     @Test
     @DisplayName("update | Returns mono error when ingredient does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(ingredientRepository.findById(any(UUID.class)))
+        BDDMockito.when(ingredientRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(ingredientService.update(ingredient))
                 .expectSubscription()
@@ -133,7 +128,7 @@ class IngredientServiceTest {
     @Test
     @DisplayName("delete | Removes the ingredient when successful")
     void delete() {
-        StepVerifier.create(ingredientService.delete(UUID.randomUUID()))
+        StepVerifier.create(ingredientService.delete(1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -142,9 +137,9 @@ class IngredientServiceTest {
     @Test
     @DisplayName("delete | Returns Mono error when ingredient does not exists")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(ingredientRepository.findById(any(UUID.class)))
+        BDDMockito.when(ingredientRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(ingredientService.delete(UUID.randomUUID()))
+        StepVerifier.create(ingredientService.delete(1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

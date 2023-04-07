@@ -1,6 +1,5 @@
 package api.services;
 
-import api.configs.BlockHoundTest;
 import api.domains.Proficiency;
 import api.repositories.ProficiencyRepository;
 import api.services.cache.CacheService;
@@ -14,19 +13,15 @@ import org.mockito.Mock;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Proficiency Service Test")
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class ProficiencyServiceTest {
 
     @InjectMocks
@@ -44,7 +39,7 @@ class ProficiencyServiceTest {
     void setUp() {
         BDDMockito.when(proficiencyRepository.findByNameIgnoreCase(anyString()))
                 .thenReturn(Mono.just(proficiency));
-        BDDMockito.when(proficiencyRepository.findById(any(UUID.class)))
+        BDDMockito.when(proficiencyRepository.findById(anyLong()))
                 .thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyRepository.findAll(any(Sort.class)))
                 .thenReturn(Flux.just(proficiency));
@@ -62,7 +57,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("findById | Returns a mono of proficiency")
     void findById_ReturnMonoProficiency_WhenSuccessful() {
-        StepVerifier.create(proficiencyService.findById(UUID.randomUUID()))
+        StepVerifier.create(proficiencyService.findById(1L))
                 .expectSubscription()
                 .expectNext(proficiency)
                 .verifyComplete();
@@ -71,9 +66,9 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("findById | Returns mono error when proficiency does not exists")
     void findById_ReturnMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(proficiencyRepository.findById(any(UUID.class)))
+        BDDMockito.when(proficiencyRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(proficiencyService.findById(UUID.randomUUID()))
+        StepVerifier.create(proficiencyService.findById(1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -128,7 +123,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("update | Returns mono error when proficiency does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(proficiencyRepository.findById(any(UUID.class)))
+        BDDMockito.when(proficiencyRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(proficiencyService.update(proficiency))
                 .expectSubscription()
@@ -139,7 +134,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("delete | Removes the proficiency when successful")
     void delete() {
-        StepVerifier.create(proficiencyService.delete(UUID.randomUUID()))
+        StepVerifier.create(proficiencyService.delete(1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -147,9 +142,9 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("delete | Returns mono error when proficiency does not exist")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(proficiencyRepository.findById(any(UUID.class)))
+        BDDMockito.when(proficiencyRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(proficiencyService.delete(UUID.randomUUID()))
+        StepVerifier.create(proficiencyService.delete(1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

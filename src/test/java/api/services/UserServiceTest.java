@@ -1,6 +1,5 @@
 package api.services;
 
-import api.configs.BlockHoundTest;
 import api.domains.User;
 import api.repositories.UserRepository;
 import api.services.impl.UserService;
@@ -12,19 +11,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("User Service Test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class UserServiceTest {
 
     @InjectMocks
@@ -37,7 +32,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(userRepository.findById(any(UUID.class)))
+        BDDMockito.when(userRepository.findById(anyLong()))
                 .thenReturn(Mono.just(user));
         BDDMockito.when(userRepository.findByUsername(anyString()))
                 .thenReturn(Mono.just(user));
@@ -52,7 +47,7 @@ class UserServiceTest {
     @Test
     @DisplayName("findById | Returns a mono of user when successful")
     void findById() {
-        StepVerifier.create(userService.findById(UUID.randomUUID()))
+        StepVerifier.create(userService.findById(1L))
                 .expectSubscription()
                 .expectNext(user)
                 .verifyComplete();
@@ -61,9 +56,9 @@ class UserServiceTest {
     @Test
     @DisplayName("findById | Returns a mono error when user does not exists")
     void findById_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(userRepository.findById(any(UUID.class)))
+        BDDMockito.when(userRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(userService.findById(UUID.randomUUID()))
+        StepVerifier.create(userService.findById(1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -118,7 +113,7 @@ class UserServiceTest {
     @Test
     @DisplayName("update | Returns mono error when user does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(userRepository.findById(any(UUID.class)))
+        BDDMockito.when(userRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(userService.update(user))
                 .expectSubscription()
@@ -129,7 +124,7 @@ class UserServiceTest {
     @Test
     @DisplayName("delete | removes the user when successful")
     void delete() {
-        StepVerifier.create(userService.delete(UUID.randomUUID()))
+        StepVerifier.create(userService.delete(1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -138,9 +133,9 @@ class UserServiceTest {
     @Test
     @DisplayName("delete | Returns mono error when user does not exists")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(userRepository.findById(any(UUID.class)))
+        BDDMockito.when(userRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(userService.delete(UUID.randomUUID()))
+        StepVerifier.create(userService.delete(1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

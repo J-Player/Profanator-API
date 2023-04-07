@@ -1,6 +1,5 @@
 package api.services;
 
-import api.configs.BlockHoundTest;
 import api.domains.Item;
 import api.repositories.ItemRepository;
 import api.services.cache.CacheService;
@@ -16,19 +15,15 @@ import org.mockito.Mock;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Item Service Test")
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class ItemServiceTest {
 
     @InjectMocks
@@ -47,7 +42,7 @@ class ItemServiceTest {
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(itemRepository.findById(any(UUID.class)))
+        BDDMockito.when(itemRepository.findById(anyLong()))
                 .thenReturn(Mono.just(item));
         BDDMockito.when(itemRepository.findByNameIgnoreCase(anyString()))
                 .thenReturn(Mono.just(item));
@@ -65,7 +60,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("findById | Returns a mono of item when successful")
     void findById() {
-        StepVerifier.create(itemService.findById(UUID.randomUUID()))
+        StepVerifier.create(itemService.findById(1L))
                 .expectSubscription()
                 .expectNext(item)
                 .verifyComplete();
@@ -74,9 +69,9 @@ class ItemServiceTest {
     @Test
     @DisplayName("findById | Returns a mono error when item does not exists")
     void findById_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(itemRepository.findById(any(UUID.class)))
+        BDDMockito.when(itemRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(itemService.findById(UUID.randomUUID()))
+        StepVerifier.create(itemService.findById(1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -142,7 +137,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("update | Returns mono error when item does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(itemRepository.findById(any(UUID.class)))
+        BDDMockito.when(itemRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(itemService.update(item))
                 .expectSubscription()
@@ -153,7 +148,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("delete | removes the item when successful")
     void delete() {
-        StepVerifier.create(itemService.delete(UUID.randomUUID()))
+        StepVerifier.create(itemService.delete(1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -162,9 +157,9 @@ class ItemServiceTest {
     @Test
     @DisplayName("delete | Returns mono error when item does not exists")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(itemRepository.findById(any(UUID.class)))
+        BDDMockito.when(itemRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(itemService.delete(UUID.randomUUID()))
+        StepVerifier.create(itemService.delete(1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
