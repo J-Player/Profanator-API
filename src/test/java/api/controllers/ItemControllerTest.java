@@ -1,6 +1,5 @@
 package api.controllers;
 
-import api.configs.BlockHoundTest;
 import api.domains.Item;
 import api.domains.dtos.ItemDTO;
 import api.services.impl.ItemService;
@@ -11,19 +10,15 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Item Controller Test")
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class ItemControllerTest {
 
     @InjectMocks
@@ -33,11 +28,11 @@ class ItemControllerTest {
     private ItemService itemService;
 
     private final Item item = ItemCreator.item();
-    private final ItemDTO itemDTO = ItemCreator.itemDTO();
+    private final ItemDTO itemDTO = ItemCreator.itemToSave();
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(itemService.findById(any(UUID.class)))
+        BDDMockito.when(itemService.findById(anyLong()))
                 .thenReturn(Mono.just(item));
         BDDMockito.when(itemService.findByName(anyString()))
                 .thenReturn(Mono.just(item));
@@ -49,14 +44,14 @@ class ItemControllerTest {
                 .thenReturn(Mono.just(item));
         BDDMockito.when(itemService.update(any(Item.class)))
                 .thenReturn(Mono.empty());
-        BDDMockito.when(itemService.delete(any(UUID.class)))
+        BDDMockito.when(itemService.delete(anyLong()))
                 .thenReturn(Mono.empty());
     }
 
     @Test
     @DisplayName("findById | Returns a item when successful")
     void findById() {
-        StepVerifier.create(itemController.findById(UUID.randomUUID()))
+        StepVerifier.create(itemController.findById(1L))
                 .expectSubscription()
                 .expectNext(item)
                 .verifyComplete();
@@ -92,7 +87,7 @@ class ItemControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(itemController.update(UUID.randomUUID(), itemDTO))
+        StepVerifier.create(itemController.update(1L, itemDTO))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -100,7 +95,7 @@ class ItemControllerTest {
     @Test
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
-        StepVerifier.create(itemController.delete(UUID.randomUUID()))
+        StepVerifier.create(itemController.delete(1L))
                 .expectSubscription()
                 .verifyComplete();
     }

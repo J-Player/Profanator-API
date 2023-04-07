@@ -1,29 +1,25 @@
 package api.controllers;
 
-import api.configs.BlockHoundTest;
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
+import api.mappers.ProficiencyMapper;
 import api.services.impl.ProficiencyService;
-import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static api.util.ProficiencyCreator.proficiency;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Proficiency Controller Test")
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class ProficiencyControllerTest {
 
     @InjectMocks
@@ -32,12 +28,12 @@ class ProficiencyControllerTest {
     @Mock
     private ProficiencyService proficiencyService;
 
-    private final Proficiency proficiency = ProficiencyCreator.proficiency();
-    private final ProficiencyDTO proficiencyDTO = ProficiencyCreator.proficiencyDTO();
+    private final Proficiency proficiency = proficiency();
+    private final ProficiencyDTO proficiencyDTO = ProficiencyMapper.INSTANCE.toProficiencyDTO(proficiency);
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(proficiencyService.findById(any(UUID.class)))
+        BDDMockito.when(proficiencyService.findById(anyLong()))
                 .thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyService.findByName(anyString()))
                 .thenReturn(Mono.just(proficiency));
@@ -47,7 +43,7 @@ class ProficiencyControllerTest {
                 .thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyService.update(any(Proficiency.class)))
                 .thenReturn(Mono.empty());
-        BDDMockito.when(proficiencyService.delete(any(UUID.class)))
+        BDDMockito.when(proficiencyService.delete(anyLong()))
                 .thenReturn(Mono.empty());
     }
 
@@ -63,7 +59,7 @@ class ProficiencyControllerTest {
     @Test
     @DisplayName("findById | Returns a proficiency when successful")
     void findById() {
-        StepVerifier.create(proficiencyController.findById(UUID.randomUUID()))
+        StepVerifier.create(proficiencyController.findById(1L))
                 .expectSubscription()
                 .expectNext(proficiency)
                 .verifyComplete();
@@ -90,7 +86,7 @@ class ProficiencyControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(proficiencyController.update(UUID.randomUUID(), proficiencyDTO))
+        StepVerifier.create(proficiencyController.update(1L, proficiencyDTO))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -98,7 +94,7 @@ class ProficiencyControllerTest {
     @Test
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
-        StepVerifier.create(proficiencyController.delete(UUID.randomUUID()))
+        StepVerifier.create(proficiencyController.delete(1L))
                 .expectSubscription()
                 .verifyComplete();
     }

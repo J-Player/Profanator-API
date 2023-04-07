@@ -1,6 +1,5 @@
 package api.controllers;
 
-import api.configs.BlockHoundTest;
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
 import api.services.impl.IngredientService;
@@ -11,19 +10,15 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Ingredient Controller Test")
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class IngredientControllerTest {
 
     @InjectMocks
@@ -37,7 +32,7 @@ class IngredientControllerTest {
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(ingredientService.findById(any(UUID.class)))
+        BDDMockito.when(ingredientService.findById(anyLong()))
                 .thenReturn(Mono.just(ingredient));
         BDDMockito.when(ingredientService.findAll())
                 .thenReturn(Flux.just(ingredient));
@@ -47,14 +42,14 @@ class IngredientControllerTest {
                 .thenReturn(Mono.just(ingredient));
         BDDMockito.when(ingredientService.update(any(Ingredient.class)))
                 .thenReturn(Mono.empty());
-        BDDMockito.when(ingredientService.delete(any(UUID.class)))
+        BDDMockito.when(ingredientService.delete(anyLong()))
                 .thenReturn(Mono.empty());
     }
 
     @Test
     @DisplayName("findById | Returns a ingredient when successful")
     void findById() {
-        StepVerifier.create(ingredientController.findById(UUID.randomUUID()))
+        StepVerifier.create(ingredientController.findById(1L))
                 .expectSubscription()
                 .expectNext(ingredient)
                 .verifyComplete();
@@ -90,7 +85,7 @@ class IngredientControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(ingredientController.update(UUID.randomUUID(), ingredientDTO))
+        StepVerifier.create(ingredientController.update(1L, ingredientDTO))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -98,7 +93,7 @@ class IngredientControllerTest {
     @Test
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
-        StepVerifier.create(ingredientController.delete(UUID.randomUUID()))
+        StepVerifier.create(ingredientController.delete(1L))
                 .expectSubscription()
                 .verifyComplete();
     }

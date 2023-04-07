@@ -1,6 +1,5 @@
 package api.controllers;
 
-import api.configs.BlockHoundTest;
 import api.domains.User;
 import api.domains.dtos.UserDTO;
 import api.services.impl.UserService;
@@ -11,19 +10,15 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("User Controller Test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class UserControllerTest {
 
     @InjectMocks
@@ -37,7 +32,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(userService.findById(any(UUID.class)))
+        BDDMockito.when(userService.findById(anyLong()))
                 .thenReturn(Mono.just(user));
         BDDMockito.when(userService.findByName(anyString()))
                 .thenReturn(Mono.just(user));
@@ -47,7 +42,7 @@ class UserControllerTest {
                 .thenReturn(Mono.just(user));
         BDDMockito.when(userService.update(any(User.class)))
                 .thenReturn(Mono.empty());
-        BDDMockito.when(userService.delete(any(UUID.class)))
+        BDDMockito.when(userService.delete(anyLong()))
                 .thenReturn(Mono.empty());
     }
 
@@ -63,7 +58,7 @@ class UserControllerTest {
     @Test
     @DisplayName("findById | Returns a user when successful")
     void findById() {
-        StepVerifier.create(userController.findById(UUID.randomUUID()))
+        StepVerifier.create(userController.findById(1L))
                 .expectSubscription()
                 .expectNext(user)
                 .verifyComplete();
@@ -90,7 +85,7 @@ class UserControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(userController.update(UUID.randomUUID(), userDTO))
+        StepVerifier.create(userController.update(1L, userDTO))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -98,7 +93,7 @@ class UserControllerTest {
     @Test
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
-        StepVerifier.create(userController.delete(UUID.randomUUID()))
+        StepVerifier.create(userController.delete(1L))
                 .expectSubscription()
                 .verifyComplete();
     }
