@@ -3,15 +3,11 @@ package api.util;
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
 
-import java.util.UUID;
-
-import static java.util.UUID.randomUUID;
-
 public abstract class IngredientCreator {
 
-    private static final UUID ID = randomUUID();
-    private static final String PRODUCT = ItemCreator.NAME.concat("_1");
-    private static final String NAME = ItemCreator.NAME.concat("_2");
+    private static final Long ID = 1L;
+    private static final String PRODUCT = "Product";
+    private static final String NAME = "Name";
     private static final int QUANTITY = 1;
 
     public static Ingredient ingredient() {
@@ -21,6 +17,18 @@ public abstract class IngredientCreator {
                 .name(NAME)
                 .quantity(QUANTITY)
                 .build();
+    }
+
+    public static IngredientDTO ingredientToSave() {
+        return ingredientDTO().withName(NAME.concat("_Save"));
+    }
+
+    public static Ingredient ingredientToUpdate() {
+        return ingredient().withName(NAME.concat("_Update"));
+    }
+
+    public static Ingredient ingredientToDelete() {
+        return ingredient().withName(NAME.concat("_Delete"));
     }
 
     public static IngredientDTO ingredientDTO() {

@@ -3,13 +3,9 @@ package api.util;
 import api.domains.User;
 import api.domains.dtos.UserDTO;
 
-import java.util.UUID;
-
-import static java.util.UUID.randomUUID;
-
 public abstract class UserCreator {
 
-    private static final UUID ID = randomUUID();
+    private static final Long ID = 1L;
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String AUTHORITIES = "ROLE_USER";

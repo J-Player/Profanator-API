@@ -3,16 +3,12 @@ package api.util;
 import api.domains.Item;
 import api.domains.dtos.ItemDTO;
 
-import java.util.UUID;
-
-import static java.util.UUID.randomUUID;
-
 public abstract class ItemCreator {
 
-    private static final UUID ID = randomUUID();
+    private static final Long ID = 1L;
     protected static final String PROFICIENCY = ProficiencyCreator.NAME;
-    protected static final String NAME = "item";
-    protected static final int QTBYPRODUCTION = 1;
+    protected static final String NAME = "Item";
+    private static final Integer QTBYPRODUCTION = 1;
 
     public static Item item() {
         return Item.builder()
@@ -23,17 +19,24 @@ public abstract class ItemCreator {
                 .build();
     }
 
-    public static ItemDTO itemDTO() {
+    public static ItemDTO itemToSave() {
         return ItemDTO.builder()
                 .proficiency(PROFICIENCY)
-                .name(NAME)
+                .name(NAME.concat("_Save"))
                 .qtByProduction(QTBYPRODUCTION)
                 .build();
     }
 
+    public static Item itemToUpdate() {
+        return item().withName(NAME.concat("_Update"));
+    }
+
+    public static Item itemToDelete() {
+        return item().withName(NAME.concat("_Delete"));
+    }
+
     public static ItemDTO invalidItemDTO() {
         return ItemDTO.builder()
-                .proficiency(null)
                 .name(null)
                 .qtByProduction(0)
                 .build();
