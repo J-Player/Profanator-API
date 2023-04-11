@@ -1,14 +1,18 @@
-package api.util;
+package api.utils;
 
 import api.domains.User;
 import api.domains.dtos.UserDTO;
 
 public abstract class UserCreator {
 
-    private static final Long ID = 1L;
+    private static final long ID = 1L;
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String AUTHORITIES = "ROLE_USER";
+    private static final boolean ACCOUNT_NON_LOCKED = true;
+    private static final boolean ACCOUNT_NON_EXPIRED = true;
+    private static final boolean CREDENTIALS_NON_EXPIRED = true;
+    private static final boolean ENABLED = true;
 
     public static User user() {
         return User.builder()
@@ -20,14 +24,11 @@ public abstract class UserCreator {
     }
 
     public static UserDTO userDTO() {
-        return UserDTO.builder()
-                .username(USERNAME)
-                .password(PASSWORD)
-                .accountNonLocked(true)
-                .accountNonExpired(true)
-                .credentialsNonExpired(true)
-                .enabled(true)
-                .build();
+        return new UserDTO(USERNAME, PASSWORD, AUTHORITIES,
+                ACCOUNT_NON_LOCKED,
+                ACCOUNT_NON_EXPIRED,
+                CREDENTIALS_NON_EXPIRED,
+                ENABLED);
     }
 
 }

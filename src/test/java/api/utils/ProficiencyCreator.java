@@ -1,11 +1,11 @@
-package api.util;
+package api.utils;
 
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
 
 public abstract class ProficiencyCreator {
 
-    private static final Long ID = 1L;
+    private static final long ID = 1L;
     protected static final String NAME = "Proficiency";
 
     public static Proficiency proficiency() {
@@ -16,7 +16,7 @@ public abstract class ProficiencyCreator {
     }
 
     public static ProficiencyDTO proficiencyToSave() {
-        return ProficiencyDTO.builder().name(NAME.concat("_Save")).build();
+        return new ProficiencyDTO(NAME.concat("_Save"));
     }
 
     public static Proficiency proficiencyToUpdate() {
@@ -27,10 +27,12 @@ public abstract class ProficiencyCreator {
         return proficiency().withName(NAME.concat("_Delete"));
     }
 
+    public static ProficiencyDTO proficiencyDTO() {
+        return new ProficiencyDTO(NAME);
+    }
+
     public static ProficiencyDTO invalidProficiencyDTO() {
-        return ProficiencyDTO.builder()
-                .name(null)
-                .build();
+        return new ProficiencyDTO(null);
     }
 
 }

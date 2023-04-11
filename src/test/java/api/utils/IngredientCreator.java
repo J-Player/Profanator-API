@@ -1,13 +1,13 @@
-package api.util;
+package api.utils;
 
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
 
 public abstract class IngredientCreator {
 
-    private static final Long ID = 1L;
-    private static final String PRODUCT = "Product";
-    private static final String NAME = "Name";
+    private static final long ID = 1L;
+    private static final String PRODUCT = ItemCreator.NAME.concat("_Product");
+    private static final String NAME = ItemCreator.NAME.concat("_Name");
     private static final int QUANTITY = 1;
 
     public static Ingredient ingredient() {
@@ -20,7 +20,7 @@ public abstract class IngredientCreator {
     }
 
     public static IngredientDTO ingredientToSave() {
-        return ingredientDTO().withName(NAME.concat("_Save"));
+        return new IngredientDTO(PRODUCT, NAME.concat("_Save"), QUANTITY);
     }
 
     public static Ingredient ingredientToUpdate() {
@@ -32,19 +32,11 @@ public abstract class IngredientCreator {
     }
 
     public static IngredientDTO ingredientDTO() {
-        return IngredientDTO.builder()
-                .product(PRODUCT)
-                .name(NAME)
-                .quantity(QUANTITY)
-                .build();
+        return new IngredientDTO(PRODUCT, NAME, QUANTITY);
     }
 
     public static IngredientDTO invalidIngredientDTO() {
-        return IngredientDTO.builder()
-                .product(null)
-                .name(null)
-                .quantity(0)
-                .build();
+        return new IngredientDTO(null, null, 0);
     }
 
 }

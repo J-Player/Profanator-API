@@ -1,14 +1,14 @@
-package api.util;
+package api.utils;
 
 import api.domains.Item;
 import api.domains.dtos.ItemDTO;
 
 public abstract class ItemCreator {
 
-    private static final Long ID = 1L;
+    private static final long ID = 1L;
     protected static final String PROFICIENCY = ProficiencyCreator.NAME;
     protected static final String NAME = "Item";
-    private static final Integer QTBYPRODUCTION = 1;
+    private static final int QTBYPRODUCTION = 1;
 
     public static Item item() {
         return Item.builder()
@@ -20,11 +20,7 @@ public abstract class ItemCreator {
     }
 
     public static ItemDTO itemToSave() {
-        return ItemDTO.builder()
-                .proficiency(PROFICIENCY)
-                .name(NAME.concat("_Save"))
-                .qtByProduction(QTBYPRODUCTION)
-                .build();
+        return new ItemDTO(PROFICIENCY, NAME.concat("_Save"), QTBYPRODUCTION);
     }
 
     public static Item itemToUpdate() {
@@ -35,11 +31,12 @@ public abstract class ItemCreator {
         return item().withName(NAME.concat("_Delete"));
     }
 
+    public static ItemDTO itemDTO() {
+        return new ItemDTO(PROFICIENCY, NAME, QTBYPRODUCTION);
+    }
+
     public static ItemDTO invalidItemDTO() {
-        return ItemDTO.builder()
-                .name(null)
-                .qtByProduction(0)
-                .build();
+        return new ItemDTO(null, null, 0);
     }
 
 }
