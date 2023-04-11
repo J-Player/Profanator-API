@@ -1,12 +1,13 @@
 package api.services;
 
 import api.domains.Item;
+import api.domains.dtos.ItemDTO;
 import api.repositories.ItemRepository;
 import api.services.cache.CacheService;
 import api.services.impl.ItemService;
 import api.services.impl.ProficiencyService;
-import api.util.ItemCreator;
-import api.util.ProficiencyCreator;
+import api.utils.ItemCreator;
+import api.utils.ProficiencyCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -39,6 +40,7 @@ class ItemServiceTest {
     private CacheService cacheService;
 
     private final Item item = ItemCreator.item();
+    private final ItemDTO itemDTO = ItemCreator.itemDTO();
 
     @BeforeEach
     void setUp() {
@@ -120,7 +122,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("save | creates an item when successful")
     void save() {
-        StepVerifier.create(itemService.save(item))
+        StepVerifier.create(itemService.save(itemDTO))
                 .expectSubscription()
                 .expectNext(item)
                 .verifyComplete();
@@ -129,7 +131,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("update | save updated item and returns empty mono when successful")
     void update() {
-        StepVerifier.create(itemService.update(item))
+        StepVerifier.create(itemService.update(itemDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -139,7 +141,7 @@ class ItemServiceTest {
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
         BDDMockito.when(itemRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(itemService.update(item))
+        StepVerifier.create(itemService.update(itemDTO, 1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

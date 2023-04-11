@@ -1,10 +1,11 @@
 package api.services;
 
 import api.domains.Proficiency;
+import api.domains.dtos.ProficiencyDTO;
 import api.repositories.ProficiencyRepository;
 import api.services.cache.CacheService;
 import api.services.impl.ProficiencyService;
-import api.util.ProficiencyCreator;
+import api.utils.ProficiencyCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -33,6 +34,7 @@ class ProficiencyServiceTest {
     @Mock
     private CacheService cacheService;
 
+    private final ProficiencyDTO proficiencyDTO = ProficiencyCreator.proficiencyDTO();
     private final Proficiency proficiency = ProficiencyCreator.proficiency();
 
     @BeforeEach
@@ -106,7 +108,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("save | Create a proficiency in database")
     void save() {
-        StepVerifier.create(proficiencyService.save(proficiency.withId(null)))
+        StepVerifier.create(proficiencyService.save(proficiencyDTO))
                 .expectSubscription()
                 .expectNext(proficiency)
                 .verifyComplete();
@@ -115,7 +117,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("update | Save updated proficiency and returns empty mono when successful")
     void update() {
-        StepVerifier.create(proficiencyService.update(proficiency))
+        StepVerifier.create(proficiencyService.update(proficiencyDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -125,7 +127,7 @@ class ProficiencyServiceTest {
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
         BDDMockito.when(proficiencyRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(proficiencyService.update(proficiency))
+        StepVerifier.create(proficiencyService.update(proficiencyDTO, 1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

@@ -1,12 +1,13 @@
 package api.services;
 
 import api.domains.Ingredient;
+import api.domains.dtos.IngredientDTO;
 import api.repositories.IngredientRepository;
 import api.services.cache.CacheService;
 import api.services.impl.IngredientService;
 import api.services.impl.ItemService;
-import api.util.IngredientCreator;
-import api.util.ItemCreator;
+import api.utils.IngredientCreator;
+import api.utils.ItemCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -39,6 +40,7 @@ class IngredientServiceTest {
     private CacheService cacheService;
 
     private final Ingredient ingredient = IngredientCreator.ingredient();
+    private final IngredientDTO ingredientDTO = IngredientCreator.ingredientDTO();
 
     @BeforeEach
     void setUp() {
@@ -100,7 +102,7 @@ class IngredientServiceTest {
     @Test
     @DisplayName("save | Creates an ingredient when successful")
     void save() {
-        StepVerifier.create(ingredientService.save(ingredient))
+        StepVerifier.create(ingredientService.save(ingredientDTO))
                 .expectSubscription()
                 .expectNext(ingredient)
                 .verifyComplete();
@@ -109,7 +111,7 @@ class IngredientServiceTest {
     @Test
     @DisplayName("update | Save updated ingredient and returns empty mono when successful")
     void update() {
-        StepVerifier.create(ingredientService.update(ingredient))
+        StepVerifier.create(ingredientService.update(ingredientDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -119,7 +121,7 @@ class IngredientServiceTest {
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
         BDDMockito.when(ingredientRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(ingredientService.update(ingredient))
+        StepVerifier.create(ingredientService.update(ingredientDTO, 1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

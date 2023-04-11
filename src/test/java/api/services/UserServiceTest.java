@@ -1,9 +1,10 @@
 package api.services;
 
 import api.domains.User;
+import api.domains.dtos.UserDTO;
 import api.repositories.UserRepository;
 import api.services.impl.UserService;
-import api.util.UserCreator;
+import api.utils.UserCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -29,6 +30,7 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     private final User user = UserCreator.user();
+    private final UserDTO userDTO = UserCreator.userDTO();
 
     @BeforeEach
     void setUp() {
@@ -96,7 +98,7 @@ class UserServiceTest {
     @Test
     @DisplayName("save | creates an user when successful")
     void save() {
-        StepVerifier.create(userService.save(user))
+        StepVerifier.create(userService.save(userDTO))
                 .expectSubscription()
                 .expectNext(user)
                 .verifyComplete();
@@ -105,7 +107,7 @@ class UserServiceTest {
     @Test
     @DisplayName("update | save updated user and returns empty mono when successful")
     void update() {
-        StepVerifier.create(userService.update(user))
+        StepVerifier.create(userService.update(userDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -115,7 +117,7 @@ class UserServiceTest {
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
         BDDMockito.when(userRepository.findById(anyLong()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(userService.update(user))
+        StepVerifier.create(userService.update(userDTO, 1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
