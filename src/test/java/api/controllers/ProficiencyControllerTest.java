@@ -14,7 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static api.util.ProficiencyCreator.proficiency;
+import static api.utils.ProficiencyCreator.proficiency;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -39,9 +39,9 @@ class ProficiencyControllerTest {
                 .thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyService.findAll())
                 .thenReturn(Flux.just(proficiency));
-        BDDMockito.when(proficiencyService.save(any(Proficiency.class)))
+        BDDMockito.when(proficiencyService.save(any(ProficiencyDTO.class)))
                 .thenReturn(Mono.just(proficiency));
-        BDDMockito.when(proficiencyService.update(any(Proficiency.class)))
+        BDDMockito.when(proficiencyService.update(any(ProficiencyDTO.class), anyLong()))
                 .thenReturn(Mono.empty());
         BDDMockito.when(proficiencyService.delete(anyLong()))
                 .thenReturn(Mono.empty());
@@ -86,7 +86,7 @@ class ProficiencyControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(proficiencyController.update(1L, proficiencyDTO))
+        StepVerifier.create(proficiencyController.update(proficiencyDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }

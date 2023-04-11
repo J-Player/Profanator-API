@@ -3,7 +3,7 @@ package api.controllers;
 import api.domains.Item;
 import api.domains.dtos.ItemDTO;
 import api.services.impl.ItemService;
-import api.util.ItemCreator;
+import api.utils.ItemCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -40,9 +40,9 @@ class ItemControllerTest {
                 .thenReturn(Flux.just(item));
         BDDMockito.when(itemService.findAllByProficiency(anyString()))
                 .thenReturn(Flux.just(item));
-        BDDMockito.when(itemService.save(any(Item.class)))
+        BDDMockito.when(itemService.save(any(ItemDTO.class)))
                 .thenReturn(Mono.just(item));
-        BDDMockito.when(itemService.update(any(Item.class)))
+        BDDMockito.when(itemService.update(any(ItemDTO.class), anyLong()))
                 .thenReturn(Mono.empty());
         BDDMockito.when(itemService.delete(anyLong()))
                 .thenReturn(Mono.empty());
@@ -87,7 +87,7 @@ class ItemControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(itemController.update(1L, itemDTO))
+        StepVerifier.create(itemController.update(itemDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }

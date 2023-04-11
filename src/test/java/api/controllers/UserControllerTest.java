@@ -3,7 +3,7 @@ package api.controllers;
 import api.domains.User;
 import api.domains.dtos.UserDTO;
 import api.services.impl.UserService;
-import api.util.UserCreator;
+import api.utils.UserCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -38,9 +38,9 @@ class UserControllerTest {
                 .thenReturn(Mono.just(user));
         BDDMockito.when(userService.findAll())
                 .thenReturn(Flux.just(user));
-        BDDMockito.when(userService.save(any(User.class)))
+        BDDMockito.when(userService.save(any(UserDTO.class)))
                 .thenReturn(Mono.just(user));
-        BDDMockito.when(userService.update(any(User.class)))
+        BDDMockito.when(userService.update(any(UserDTO.class), anyLong()))
                 .thenReturn(Mono.empty());
         BDDMockito.when(userService.delete(anyLong()))
                 .thenReturn(Mono.empty());
@@ -85,7 +85,7 @@ class UserControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(userController.update(1L, userDTO))
+        StepVerifier.create(userController.update(userDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }

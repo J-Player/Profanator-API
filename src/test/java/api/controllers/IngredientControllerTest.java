@@ -3,7 +3,7 @@ package api.controllers;
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
 import api.services.impl.IngredientService;
-import api.util.IngredientCreator;
+import api.utils.IngredientCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -38,9 +38,9 @@ class IngredientControllerTest {
                 .thenReturn(Flux.just(ingredient));
         BDDMockito.when(ingredientService.findAllByProduct(anyString()))
                 .thenReturn(Flux.just(ingredient));
-        BDDMockito.when(ingredientService.save(any(Ingredient.class)))
+        BDDMockito.when(ingredientService.save(any(IngredientDTO.class)))
                 .thenReturn(Mono.just(ingredient));
-        BDDMockito.when(ingredientService.update(any(Ingredient.class)))
+        BDDMockito.when(ingredientService.update(any(IngredientDTO.class), anyLong()))
                 .thenReturn(Mono.empty());
         BDDMockito.when(ingredientService.delete(anyLong()))
                 .thenReturn(Mono.empty());
@@ -85,7 +85,7 @@ class IngredientControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(ingredientController.update(1L, ingredientDTO))
+        StepVerifier.create(ingredientController.update(ingredientDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }
