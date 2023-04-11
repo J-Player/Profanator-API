@@ -1,34 +1,26 @@
 package api.domains.dtos;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Builder;
-import lombok.Data;
 import org.springframework.context.annotation.Profile;
 
-@Data
-@Builder
 @Profile("prod")
-public class UserDTO {
+public record UserDTO (
 
-    @NotEmpty(message = "The 'username' cannot be empty or null")
-    private String username;
+        @NotEmpty(message = "The 'username' cannot be empty or null")
+        String username,
 
-    @NotEmpty(message = "The 'password' cannot be empty or null")
-    private String password;
+        @NotEmpty(message = "The 'password' cannot be empty or null")
+        String password,
 
-    @NotEmpty(message = "The 'authorities' cannot be empty or null")
-    private String authorities;
+        @NotEmpty(message = "The 'authorities' cannot be empty or null")
+        String authorities,
 
-    @Builder.Default
-    private boolean accountNonLocked = true;
+        boolean accountNonLocked,
 
-    @Builder.Default
-    private boolean accountNonExpired = true;
+        boolean accountNonExpired,
 
-    @Builder.Default
-    private boolean credentialsNonExpired = true;
+        boolean credentialsNonExpired,
 
-    @Builder.Default
-    private boolean enabled = true;
+        boolean enabled
 
-}
+) {}

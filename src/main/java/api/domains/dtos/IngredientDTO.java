@@ -3,24 +3,17 @@ package api.domains.dtos;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
-@Data
-@With
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class IngredientDTO {
+public record IngredientDTO (
 
-    @NotEmpty(message = "The 'product' cannot be empty or null")
-    private String product;
+        @NotEmpty(message = "The 'product' cannot be empty or null")
+        String product,
 
-    @NotEmpty(message = "The 'name' cannot be empty or null")
-    private String name;
+        @NotEmpty(message = "The 'name' cannot be empty or null")
+        String name,
 
-    @NotNull(message = "The 'quantity' cannot be empty or null")
-    @Min(value = 1, message = "The minimum value is 1.")
-    @Builder.Default
-    private Integer quantity = 1;
+        @NotNull(message = "The 'quantity' cannot be empty or null")
+        @Min(value = 1, message = "The minimum value is 1.")
+        Integer quantity
 
-}
+) {}
