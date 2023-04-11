@@ -5,7 +5,7 @@ import api.domains.dtos.ProficiencyDTO;
 import api.integration.annotation.IntegrationTest;
 import api.mappers.ProficiencyMapper;
 import api.repositories.ProficiencyRepository;
-import api.util.ProficiencyCreator;
+import api.utils.ProficiencyCreator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -119,7 +119,7 @@ class ProficiencyControllerIT {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Proficiency.class)
-                .value(Proficiency::getName, Matchers.equalTo(proficiencyToSave.getName()));
+                .value(Proficiency::getName, Matchers.equalTo(proficiencyToSave.name()));
     }
 
     @Test
@@ -172,7 +172,7 @@ class ProficiencyControllerIT {
     void update_ReturnsError_WhenForbiddenUser() {
         client.put()
                 .uri(PATH_PROFICIENCIES.concat("/{id}"), proficiencyToUpdate.getId())
-                .bodyValue(proficiencyToUpdate.withName("New_Name"))
+                .bodyValue(ProficiencyMapper.INSTANCE.toProficiencyDTO(proficiencyToUpdate.withName("New_Name")))
                 .exchange()
                 .expectStatus().isForbidden();
     }

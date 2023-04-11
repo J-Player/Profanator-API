@@ -7,8 +7,8 @@ import api.integration.annotation.IntegrationTest;
 import api.mappers.IngredientMapper;
 import api.repositories.IngredientRepository;
 import api.repositories.ItemRepository;
-import api.util.IngredientCreator;
-import api.util.ItemCreator;
+import api.utils.IngredientCreator;
+import api.utils.ItemCreator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ class IngredientControllerIT {
     static void beforeAll(@Autowired ItemRepository itemRepository) {
         Item item1 = ItemCreator.item().withProficiency(null).withName(ingredient.getProduct());
         Item item2 = ItemCreator.item().withProficiency(null).withName(ingredient.getName());
-        Item item3 = ItemCreator.item().withProficiency(null).withName(ingredientToSave.getName());
+        Item item3 = ItemCreator.item().withProficiency(null).withName(ingredientToSave.name());
         Item item4 = ItemCreator.item().withProficiency(null).withName(ingredientToUpdate.getName());
         Item item5 = ItemCreator.item().withProficiency(null).withName(ingredientToDelete.getName());
         Flux.just(item1, item2, item3, item4, item5)
@@ -127,9 +127,9 @@ class IngredientControllerIT {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Ingredient.class)
-                .value(Ingredient::getProduct, Matchers.equalTo(ingredientToSave.getProduct()))
-                .value(Ingredient::getName, Matchers.equalTo(ingredientToSave.getName()))
-                .value(Ingredient::getQuantity, Matchers.equalTo(ingredientToSave.getQuantity()));
+                .value(Ingredient::getProduct, Matchers.equalTo(ingredientToSave.product()))
+                .value(Ingredient::getName, Matchers.equalTo(ingredientToSave.name()))
+                .value(Ingredient::getQuantity, Matchers.equalTo(ingredientToSave.quantity()));
     }
 
     @Test

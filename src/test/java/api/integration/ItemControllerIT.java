@@ -7,7 +7,7 @@ import api.integration.annotation.IntegrationTest;
 import api.mappers.ItemMapper;
 import api.repositories.ItemRepository;
 import api.repositories.ProficiencyRepository;
-import api.util.ItemCreator;
+import api.utils.ItemCreator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -142,9 +142,9 @@ class ItemControllerIT {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Item.class)
-                .value(Item::getProficiency, Matchers.equalTo(itemToSave.getProficiency()))
-                .value(Item::getName, Matchers.equalTo(itemToSave.getName()))
-                .value(Item::getQtByProduction, Matchers.equalTo(itemToSave.getQtByProduction()));
+                .value(Item::getProficiency, Matchers.equalTo(itemToSave.proficiency()))
+                .value(Item::getName, Matchers.equalTo(itemToSave.name()))
+                .value(Item::getQtByProduction, Matchers.equalTo(itemToSave.qtByProduction()));
     }
 
     @Test
@@ -173,7 +173,9 @@ class ItemControllerIT {
     @WithUserDetails(ADMIN_USER)
     @DisplayName("save | Returns error 500 when trying to save an item with a non-existent Proficiency.")
     void save_ReturnsError_WhenProficiencyNotFound() {
-        ItemDTO itemWithInvalidProficiency = ItemCreator.itemToSave().withProficiency("Random_Proficiency");
+        String name = itemToSave.name();
+        Integer qtByProduction = itemToSave.qtByProduction();
+        ItemDTO itemWithInvalidProficiency = new ItemDTO("Random_Proficiency", name, qtByProduction);
         client.post()
                 .uri(PATH_ITEMS)
                 .bodyValue(itemWithInvalidProficiency)
