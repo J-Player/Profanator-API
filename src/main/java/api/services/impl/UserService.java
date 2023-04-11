@@ -1,6 +1,8 @@
 package api.services.impl;
 
 import api.domains.User;
+import api.domains.dtos.UserDTO;
+import api.mappers.UserMapper;
 import api.repositories.UserRepository;
 import api.services.IService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,7 @@ import reactor.core.publisher.Mono;
 @Service
 @Profile("prod")
 @RequiredArgsConstructor
-public class UserService implements ReactiveUserDetailsService, IService<User> {
+public class UserService implements ReactiveUserDetailsService, IService<User, UserDTO> {
 
     private final UserRepository userRepository;
 
@@ -31,7 +33,7 @@ public class UserService implements ReactiveUserDetailsService, IService<User> {
     @Override
     public Mono<User> findById(Long id) {
         return userRepository.findById(id)
-                .switchIfEmpty(monoResponseStatusNotFoundException(null))
+                .switchIfEmpty(monoResponseStatusNotFoundException())
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao recuperar o item (id = {}): {}", id, ex.getMessage());
                     return Mono.error(ex);
@@ -40,7 +42,7 @@ public class UserService implements ReactiveUserDetailsService, IService<User> {
 
     public Mono<User> findByName(String username) {
         return userRepository.findByUsername(username)
-                .switchIfEmpty(monoResponseStatusNotFoundException(username));
+                .switchIfEmpty(monoResponseStatusNotFoundException());
     }
 
     @Override
@@ -49,14 +51,14 @@ public class UserService implements ReactiveUserDetailsService, IService<User> {
     }
 
     @Override
-    public Mono<User> save(User user) {
-        return userRepository.save(user);
+    public Mono<User> save(UserDTO userDTO) {
+        return userRepository.save(UserMapper.INSTANCE.toUser(userDTO));
     }
 
     @Override
-    public Mono<Void> update(User user) {
-        return findById(user.getId())
-                .thenReturn(user)
+    public Mono<Void> update(UserDTO userDTO, Long id) {
+        return findById(id)
+                .thenReturn(UserMapper.INSTANCE.toUser(userDTO).withId(id))
                 .flatMap(userRepository::save)
                 .then();
     }
@@ -67,9 +69,8 @@ public class UserService implements ReactiveUserDetailsService, IService<User> {
                 .flatMap(userRepository::delete);
     }
 
-    private <T> Mono<T> monoResponseStatusNotFoundException(String username) {
-        String message = username != null && username.length() > 0 ? String.format("User '%s' not found", username) : "User not found";
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, message));
+    private <T> Mono<T> monoResponseStatusNotFoundException() {
+        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
 }

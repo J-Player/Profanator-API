@@ -1,6 +1,8 @@
 package api.services.impl;
 
 import api.domains.Proficiency;
+import api.domains.dtos.ProficiencyDTO;
+import api.mappers.ProficiencyMapper;
 import api.repositories.ProficiencyRepository;
 import api.services.IService;
 import api.services.cache.CacheService;
@@ -26,7 +28,7 @@ import static api.configs.cache.CacheConfig.TTL;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = PROFICIENCY_CACHE_NAME)
-public class ProficiencyService implements IService<Proficiency> {
+public class ProficiencyService implements IService<Proficiency, ProficiencyDTO> {
 
     private final ProficiencyRepository proficiencyRepository;
     private final CacheService cacheService;
@@ -35,14 +37,14 @@ public class ProficiencyService implements IService<Proficiency> {
     @Cacheable
     public Mono<Proficiency> findById(Long id) {
         return proficiencyRepository.findById(id)
-                .switchIfEmpty(monoResponseStatusNotFoundException(null))
+                .switchIfEmpty(monoResponseStatusNotFoundException())
                 .cache(proficiency -> TTL, ex -> Duration.ZERO, () -> Duration.ZERO);
     }
 
     @Cacheable
     public Mono<Proficiency> findByName(String name) {
         return proficiencyRepository.findByNameIgnoreCase(name)
-                .switchIfEmpty(monoResponseStatusNotFoundException(name))
+                .switchIfEmpty(monoResponseStatusNotFoundException())
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao recuperar a Proficiency: {}.", ex.getMessage());
                     return Mono.error(ex);
@@ -65,37 +67,40 @@ public class ProficiencyService implements IService<Proficiency> {
     @Override
     @Transactional
     @CacheEvict(allEntries = true)
-    public Mono<Proficiency> save(Proficiency proficiency) {
-        return proficiencyRepository.save(proficiency)
+    public Mono<Proficiency> save(ProficiencyDTO proficiencyDTO) {
+        return proficiencyRepository.save(ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO))
                 .doOnNext(p -> {
                     log.info("Proficiency salva com sucesso! ({}).", p);
                     cacheService.evictCache(PROFICIENCY_CACHE_NAME, "findAll");
                 })
                 .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao salvar a Proficiency ({}): {}", proficiency, ex.getMessage());
+                    log.error("Ocorreu um erro ao salvar a Proficiency ({}): {}", proficiencyDTO, ex.getMessage());
                     return Mono.error(ex);
                 });
     }
 
     @Override
+    @Transactional
     @CacheEvict(allEntries = true)
-    public Mono<Void> update(Proficiency proficiency) {
-        return findById(proficiency.getId())
-                .doOnNext(oldProficiency -> {
-                    proficiency.setCreatedAt(oldProficiency.getCreatedAt());
-                    proficiency.setUpdatedAt(oldProficiency.getUpdatedAt());
-                    proficiency.setVersion(oldProficiency.getVersion());
-                })
-                .flatMap(oldProficiency -> proficiencyRepository.save(proficiency)
-                        .doOnNext(p -> log.info("Proficiency atualizada com sucesso! {}", p)))
-                .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao atualizar a Proficiency ({}): {}", proficiency, ex.getMessage());
-                    return Mono.error(ex);
-                })
+    public Mono<Void> update(ProficiencyDTO proficiencyDTO, Long id) {
+        return findById(id)
+                .map(oldProficiency ->
+                        ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO)
+                                .withId(oldProficiency.getId())
+                                .withCreatedAt(oldProficiency.getCreatedAt())
+                                .withUpdatedAt(oldProficiency.getUpdatedAt())
+                                .withVersion(oldProficiency.getVersion()))
+                .flatMap(proficiency -> proficiencyRepository.save(proficiency)
+                        .doOnSuccess(p -> log.info("Proficiency atualizada com sucesso! {}", p))
+                        .onErrorResume(ex -> {
+                            log.error("Ocorreu um erro ao atualizar a Proficiency ({}): {}", proficiency, ex.getMessage());
+                            return Mono.error(ex);
+                        }))
                 .then();
     }
 
     @Override
+    @Transactional
     @CacheEvict(allEntries = true)
     public Mono<Void> delete(Long id) {
         return findById(id)
@@ -108,10 +113,8 @@ public class ProficiencyService implements IService<Proficiency> {
                 .then();
     }
 
-    private <T> Mono<T> monoResponseStatusNotFoundException(String proficiency) {
-        String message = proficiency != null && proficiency.length() > 0 ?
-                String.format("Proficiency '%s' not found", proficiency) : "Proficiency not found";
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, message));
+    private <T> Mono<T> monoResponseStatusNotFoundException() {
+        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Proficiency not found"));
     }
 
 }

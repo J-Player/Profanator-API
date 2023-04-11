@@ -3,15 +3,15 @@ package api.services;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface IService<T> {
+public interface IService<T1, T2> {
 
-    Mono<T> findById(Long id);
+    Mono<T1> findById(Long id);
 
-    Flux<T> findAll();
+    Flux<T1> findAll();
 
-    Mono<T> save(T t);
+    Mono<T1> save(T2 t2);
 
-    Mono<Void> update(T t);
+    Mono<Void> update(T2 t2, Long id);
 
     Mono<Void> delete(Long id);
 
