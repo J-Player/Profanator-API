@@ -6,7 +6,7 @@ interface IController<T1, T2> {
 
     Mono<T1> findById(Long id);
     Mono<T1> save(T2 t2);
-    Mono<Void> update(Long id, T2 t2);
+    Mono<Void> update(T2 t2, Long id);
     Mono<Void> delete(Long id);
 
 }

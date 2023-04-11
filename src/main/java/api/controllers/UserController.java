@@ -2,7 +2,6 @@ package api.controllers;
 
 import api.domains.User;
 import api.domains.dtos.UserDTO;
-import api.mappers.UserMapper;
 import api.services.impl.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -55,17 +54,15 @@ public class UserController implements IController<User, UserDTO> {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Saves a user in the database.")
     public Mono<User> save(@RequestBody @Valid UserDTO userDTO) {
-        User user = UserMapper.INSTANCE.toUser(userDTO);
-        return userService.save(user);
+        return userService.save(userDTO);
     }
 
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a user in the database.")
-    public Mono<Void> update(@PathVariable Long id, @RequestBody @Valid UserDTO userDTO) {
-        User user = UserMapper.INSTANCE.toUser(userDTO);
-        return userService.update(user.withId(id));
+    public Mono<Void> update(@RequestBody @Valid UserDTO userDTO, @PathVariable Long id) {
+        return userService.update(userDTO, id);
     }
 
     @Override

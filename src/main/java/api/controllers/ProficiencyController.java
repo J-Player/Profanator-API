@@ -2,7 +2,6 @@ package api.controllers;
 
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
-import api.mappers.ProficiencyMapper;
 import api.services.impl.ProficiencyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -53,17 +52,15 @@ public class ProficiencyController implements IController<Proficiency, Proficien
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Saves a proficiency in the database.")
     public Mono<Proficiency> save(@RequestBody @Valid ProficiencyDTO proficiencyDTO) {
-        Proficiency proficiency = ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO);
-        return proficiencyService.save(proficiency);
+        return proficiencyService.save(proficiencyDTO);
     }
 
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a proficiency in the database.")
-    public Mono<Void> update(@PathVariable Long id, @RequestBody @Valid ProficiencyDTO proficiencyDTO) {
-        Proficiency proficiency = ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO);
-        return proficiencyService.update(proficiency.withId(id));
+    public Mono<Void> update(@RequestBody @Valid ProficiencyDTO proficiencyDTO, @PathVariable Long id) {
+        return proficiencyService.update(proficiencyDTO, id);
     }
 
     @Override

@@ -2,7 +2,6 @@ package api.controllers;
 
 import api.domains.Item;
 import api.domains.dtos.ItemDTO;
-import api.mappers.ItemMapper;
 import api.services.impl.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -53,17 +52,15 @@ public class ItemController implements IController<Item, ItemDTO> {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Saves a item in the database.")
     public Mono<Item> save(@RequestBody @Valid ItemDTO itemDTO) {
-        Item item = ItemMapper.INSTANCE.toItem(itemDTO);
-        return itemService.save(item);
+        return itemService.save(itemDTO);
     }
 
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a item in the database.")
-    public Mono<Void> update(@PathVariable Long id, @RequestBody @Valid ItemDTO itemDTO) {
-        Item item = ItemMapper.INSTANCE.toItem(itemDTO);
-        return itemService.update(item.withId(id));
+    public Mono<Void> update(@RequestBody @Valid ItemDTO itemDTO, @PathVariable Long id) {
+        return itemService.update(itemDTO, id);
     }
 
     @Override

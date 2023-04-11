@@ -2,7 +2,6 @@ package api.controllers;
 
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
-import api.mappers.IngredientMapper;
 import api.services.impl.IngredientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -46,17 +45,15 @@ public class IngredientController implements IController<Ingredient, IngredientD
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Saves a ingredient in the database.")
     public Mono<Ingredient> save(@RequestBody @Valid IngredientDTO ingredientDTO) {
-        Ingredient ingredient = IngredientMapper.INSTANCE.toIngredient(ingredientDTO);
-        return ingredientService.save(ingredient);
+        return ingredientService.save(ingredientDTO);
     }
 
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a ingredient in the database.")
-    public Mono<Void> update(@PathVariable Long id, @RequestBody @Valid IngredientDTO ingredientDTO) {
-        Ingredient ingredient = IngredientMapper.INSTANCE.toIngredient(ingredientDTO);
-        return ingredientService.update(ingredient.withId(id));
+    public Mono<Void> update(@RequestBody @Valid IngredientDTO ingredientDTO, @PathVariable Long id) {
+        return ingredientService.update(ingredientDTO, id);
     }
 
     @Override
