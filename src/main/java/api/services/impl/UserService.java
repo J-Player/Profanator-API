@@ -2,9 +2,9 @@ package api.services.impl;
 
 import api.domains.User;
 import api.domains.dtos.UserDTO;
-import api.mappers.UserMapper;
 import api.repositories.UserRepository;
 import api.services.IService;
+import api.utils.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -52,13 +52,13 @@ public class UserService implements ReactiveUserDetailsService, IService<User, U
 
     @Override
     public Mono<User> save(UserDTO userDTO) {
-        return userRepository.save(UserMapper.INSTANCE.toUser(userDTO));
+        return userRepository.save(MapperUtil.MAPPER.map(userDTO, User.class));
     }
 
     @Override
     public Mono<Void> update(UserDTO userDTO, Long id) {
         return findById(id)
-                .thenReturn(UserMapper.INSTANCE.toUser(userDTO).withId(id))
+                .doOnNext(user -> MapperUtil.MAPPER.map(userDTO, user))
                 .flatMap(userRepository::save)
                 .then();
     }

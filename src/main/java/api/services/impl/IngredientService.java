@@ -2,10 +2,10 @@ package api.services.impl;
 
 import api.domains.Ingredient;
 import api.domains.dtos.IngredientDTO;
-import api.mappers.IngredientMapper;
 import api.repositories.IngredientRepository;
 import api.services.IService;
 import api.services.cache.CacheService;
+import api.utils.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -72,7 +72,7 @@ public class IngredientService implements IService<Ingredient, IngredientDTO> {
     @Transactional
     @CacheEvict(allEntries = true)
     public Mono<Ingredient> save(IngredientDTO ingredientDTO) {
-        return ingredientRepository.save(IngredientMapper.INSTANCE.toIngredient(ingredientDTO))
+        return ingredientRepository.save(MapperUtil.MAPPER.map(ingredientDTO, Ingredient.class))
                 .doOnSuccess(i -> log.info("Ingredient salvo com sucesso! ({}).", i))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao salvar o Ingredient: {}", ex.getMessage());
@@ -85,12 +85,7 @@ public class IngredientService implements IService<Ingredient, IngredientDTO> {
     @CacheEvict(allEntries = true)
     public Mono<Void> update(IngredientDTO ingredientDTO, Long id) {
         return findById(id)
-                .doOnNext(oldIngredient ->
-                        IngredientMapper.INSTANCE.toIngredient(ingredientDTO)
-                                .withId(oldIngredient.getId())
-                                .withCreatedAt(oldIngredient.getCreatedAt())
-                                .withUpdatedAt(oldIngredient.getUpdatedAt())
-                                .withVersion(oldIngredient.getVersion()))
+                .doOnNext(ingredient -> MapperUtil.MAPPER.map(ingredientDTO, ingredient))
                 .flatMap(ingredient -> ingredientRepository.save(ingredient)
                         .doOnSuccess(i -> log.info("Ingredient atualizado com sucesso! {}", i))
                         .onErrorResume(ex -> {

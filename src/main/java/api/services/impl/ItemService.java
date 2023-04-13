@@ -2,10 +2,10 @@ package api.services.impl;
 
 import api.domains.Item;
 import api.domains.dtos.ItemDTO;
-import api.mappers.ItemMapper;
 import api.repositories.ItemRepository;
 import api.services.IService;
 import api.services.cache.CacheService;
+import api.utils.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -84,7 +84,7 @@ public class ItemService implements IService<Item, ItemDTO> {
     @Transactional
     @CacheEvict(allEntries = true)
     public Mono<Item> save(ItemDTO itemDTO) {
-        return itemRepository.save(ItemMapper.INSTANCE.toItem(itemDTO))
+        return itemRepository.save(MapperUtil.MAPPER.map(itemDTO, Item.class))
                 .doOnNext(i -> log.info("Item salvo com sucesso! ({}).", i))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao salvar o item: {}", ex.getMessage());
@@ -97,12 +97,7 @@ public class ItemService implements IService<Item, ItemDTO> {
     @CacheEvict(allEntries = true)
     public Mono<Void> update(ItemDTO itemDTO, Long id) {
         return findById(id)
-                .map(oldItem ->
-                        ItemMapper.INSTANCE.toItem(itemDTO)
-                                .withId(oldItem.getId())
-                                .withCreatedAt(oldItem.getCreatedAt())
-                                .withUpdatedAt(oldItem.getUpdatedAt())
-                                .withVersion(oldItem.getVersion()))
+                .doOnNext(item -> MapperUtil.MAPPER.map(itemDTO, item))
                 .flatMap(item -> itemRepository.save(item)
                         .doOnSuccess(i -> log.info("Item atualizado com sucesso! {}", i))
                         .onErrorResume(ex -> {

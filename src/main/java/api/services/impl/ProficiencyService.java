@@ -2,10 +2,10 @@ package api.services.impl;
 
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
-import api.mappers.ProficiencyMapper;
 import api.repositories.ProficiencyRepository;
 import api.services.IService;
 import api.services.cache.CacheService;
+import api.utils.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -68,7 +68,7 @@ public class ProficiencyService implements IService<Proficiency, ProficiencyDTO>
     @Transactional
     @CacheEvict(allEntries = true)
     public Mono<Proficiency> save(ProficiencyDTO proficiencyDTO) {
-        return proficiencyRepository.save(ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO))
+        return proficiencyRepository.save(MapperUtil.MAPPER.map(proficiencyDTO, Proficiency.class))
                 .doOnNext(p -> {
                     log.info("Proficiency salva com sucesso! ({}).", p);
                     cacheService.evictCache(PROFICIENCY_CACHE_NAME, "findAll");
@@ -84,12 +84,7 @@ public class ProficiencyService implements IService<Proficiency, ProficiencyDTO>
     @CacheEvict(allEntries = true)
     public Mono<Void> update(ProficiencyDTO proficiencyDTO, Long id) {
         return findById(id)
-                .map(oldProficiency ->
-                        ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO)
-                                .withId(oldProficiency.getId())
-                                .withCreatedAt(oldProficiency.getCreatedAt())
-                                .withUpdatedAt(oldProficiency.getUpdatedAt())
-                                .withVersion(oldProficiency.getVersion()))
+                .doOnNext(proficiency -> MapperUtil.MAPPER.map(proficiencyDTO, proficiency))
                 .flatMap(proficiency -> proficiencyRepository.save(proficiency)
                         .doOnSuccess(p -> log.info("Proficiency atualizada com sucesso! {}", p))
                         .onErrorResume(ex -> {
