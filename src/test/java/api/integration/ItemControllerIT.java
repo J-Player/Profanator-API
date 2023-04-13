@@ -4,7 +4,7 @@ import api.domains.Item;
 import api.domains.Proficiency;
 import api.domains.dtos.ItemDTO;
 import api.integration.annotation.IntegrationTest;
-import api.mappers.ItemMapper;
+import api.utils.MapperUtil;
 import api.repositories.ItemRepository;
 import api.repositories.ProficiencyRepository;
 import api.utils.ItemCreator;
@@ -142,9 +142,9 @@ class ItemControllerIT {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Item.class)
-                .value(Item::getProficiency, Matchers.equalTo(itemToSave.proficiency()))
-                .value(Item::getName, Matchers.equalTo(itemToSave.name()))
-                .value(Item::getQtByProduction, Matchers.equalTo(itemToSave.qtByProduction()));
+                .value(Item::getProficiency, Matchers.equalTo(itemToSave.getProficiency()))
+                .value(Item::getName, Matchers.equalTo(itemToSave.getName()))
+                .value(Item::getQtByProduction, Matchers.equalTo(itemToSave.getQtByProduction()));
     }
 
     @Test
@@ -173,8 +173,8 @@ class ItemControllerIT {
     @WithUserDetails(ADMIN_USER)
     @DisplayName("save | Returns error 500 when trying to save an item with a non-existent Proficiency.")
     void save_ReturnsError_WhenProficiencyNotFound() {
-        String name = itemToSave.name();
-        Integer qtByProduction = itemToSave.qtByProduction();
+        String name = itemToSave.getName();
+        Integer qtByProduction = itemToSave.getQtByProduction();
         ItemDTO itemWithInvalidProficiency = new ItemDTO("Random_Proficiency", name, qtByProduction);
         client.post()
                 .uri(PATH_ITEMS)
@@ -189,7 +189,7 @@ class ItemControllerIT {
     void update() {
         client.put()
                 .uri(PATH_ITEMS.concat("/{id}"), itemToUpdate.getId())
-                .bodyValue(ItemMapper.INSTANCE.toItemDTO(itemToUpdate.withName("New_Name")))
+                .bodyValue(MapperUtil.MAPPER.map(itemToUpdate.withName("New_Name"), ItemDTO.class))
                 .exchange()
                 .expectStatus().isNoContent();
     }
@@ -200,7 +200,7 @@ class ItemControllerIT {
     void update_ReturnsError_WhenForbiddenUser() {
         client.put()
                 .uri(PATH_ITEMS.concat("/{id}"), itemToUpdate.getId())
-                .bodyValue(ItemMapper.INSTANCE.toItemDTO(itemToUpdate.withName("New_Name")))
+                .bodyValue(MapperUtil.MAPPER.map(itemToUpdate.withName("New_Name"), ItemDTO.class))
                 .exchange()
                 .expectStatus().isForbidden();
     }
@@ -212,7 +212,7 @@ class ItemControllerIT {
         Item item = ItemCreator.itemToUpdate().withProficiency("Random_Proficiency");
         client.put()
                 .uri(PATH_ITEMS.concat("/{id}"), itemToUpdate.getId())
-                .bodyValue(ItemMapper.INSTANCE.toItemDTO(item))
+                .bodyValue(MapperUtil.MAPPER.map(item, ItemDTO.class))
                 .exchange()
                 .expectStatus().is5xxServerError();
     }

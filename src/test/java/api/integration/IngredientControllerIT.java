@@ -4,7 +4,7 @@ import api.domains.Ingredient;
 import api.domains.Item;
 import api.domains.dtos.IngredientDTO;
 import api.integration.annotation.IntegrationTest;
-import api.mappers.IngredientMapper;
+import api.utils.MapperUtil;
 import api.repositories.IngredientRepository;
 import api.repositories.ItemRepository;
 import api.utils.IngredientCreator;
@@ -42,7 +42,7 @@ class IngredientControllerIT {
     static void beforeAll(@Autowired ItemRepository itemRepository) {
         Item item1 = ItemCreator.item().withProficiency(null).withName(ingredient.getProduct());
         Item item2 = ItemCreator.item().withProficiency(null).withName(ingredient.getName());
-        Item item3 = ItemCreator.item().withProficiency(null).withName(ingredientToSave.name());
+        Item item3 = ItemCreator.item().withProficiency(null).withName(ingredientToSave.getName());
         Item item4 = ItemCreator.item().withProficiency(null).withName(ingredientToUpdate.getName());
         Item item5 = ItemCreator.item().withProficiency(null).withName(ingredientToDelete.getName());
         Flux.just(item1, item2, item3, item4, item5)
@@ -127,9 +127,9 @@ class IngredientControllerIT {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Ingredient.class)
-                .value(Ingredient::getProduct, Matchers.equalTo(ingredientToSave.product()))
-                .value(Ingredient::getName, Matchers.equalTo(ingredientToSave.name()))
-                .value(Ingredient::getQuantity, Matchers.equalTo(ingredientToSave.quantity()));
+                .value(Ingredient::getProduct, Matchers.equalTo(ingredientToSave.getProduct()))
+                .value(Ingredient::getName, Matchers.equalTo(ingredientToSave.getName()))
+                .value(Ingredient::getQuantity, Matchers.equalTo(ingredientToSave.getQuantity()));
     }
 
     @Test
@@ -160,7 +160,7 @@ class IngredientControllerIT {
     void update() {
         client.put()
                 .uri(PATH_INGREDIENTS.concat("/{id}"), ingredientToUpdate.getId())
-                .bodyValue(IngredientMapper.INSTANCE.toIngredientDTO(ingredientToUpdate.withQuantity(7)))
+                .bodyValue(MapperUtil.MAPPER.map(ingredientToUpdate.withQuantity(7), IngredientDTO.class))
                 .exchange()
                 .expectStatus().isNoContent();
     }
@@ -182,7 +182,7 @@ class IngredientControllerIT {
     void update_ReturnsError_WhenForbiddenUser() {
         client.put()
                 .uri(PATH_INGREDIENTS.concat("/{id}"), ingredientToUpdate.getId())
-                .bodyValue(IngredientMapper.INSTANCE.toIngredientDTO(ingredientToUpdate.withQuantity(7)))
+                .bodyValue(MapperUtil.MAPPER.map(ingredientToUpdate.withQuantity(7), IngredientDTO.class))
                 .exchange()
                 .expectStatus().isForbidden();
     }

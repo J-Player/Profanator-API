@@ -3,7 +3,7 @@ package api.integration;
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
 import api.integration.annotation.IntegrationTest;
-import api.mappers.ProficiencyMapper;
+import api.utils.MapperUtil;
 import api.repositories.ProficiencyRepository;
 import api.utils.ProficiencyCreator;
 import org.hamcrest.Matchers;
@@ -119,7 +119,7 @@ class ProficiencyControllerIT {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(Proficiency.class)
-                .value(Proficiency::getName, Matchers.equalTo(proficiencyToSave.name()));
+                .value(Proficiency::getName, Matchers.equalTo(proficiencyToSave.getName()));
     }
 
     @Test
@@ -150,7 +150,7 @@ class ProficiencyControllerIT {
     void update() {
         client.put()
                 .uri(PATH_PROFICIENCIES.concat("/{id}"), proficiencyToUpdate.getId())
-                .bodyValue(ProficiencyMapper.INSTANCE.toProficiencyDTO(proficiencyToUpdate.withName("New_Name")))
+                .bodyValue(MapperUtil.MAPPER.map(proficiencyToUpdate.withName("New_Name"), ProficiencyDTO.class))
                 .exchange()
                 .expectStatus().isNoContent();
     }
@@ -172,7 +172,7 @@ class ProficiencyControllerIT {
     void update_ReturnsError_WhenForbiddenUser() {
         client.put()
                 .uri(PATH_PROFICIENCIES.concat("/{id}"), proficiencyToUpdate.getId())
-                .bodyValue(ProficiencyMapper.INSTANCE.toProficiencyDTO(proficiencyToUpdate.withName("New_Name")))
+                .bodyValue(MapperUtil.MAPPER.map(proficiencyToUpdate.withName("New_Name"), ProficiencyDTO.class))
                 .exchange()
                 .expectStatus().isForbidden();
     }
