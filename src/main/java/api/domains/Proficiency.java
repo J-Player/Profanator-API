@@ -1,9 +1,7 @@
 package api.domains;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Builder;
-import lombok.Data;
-import lombok.With;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,6 +14,8 @@ import java.time.Instant;
 @Data
 @With
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table("Proficiency")
 public class Proficiency {
 

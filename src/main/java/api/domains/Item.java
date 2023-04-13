@@ -3,9 +3,7 @@ package api.domains;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
-import lombok.With;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -18,6 +16,8 @@ import java.time.Instant;
 @Data
 @With
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table("Item")
 public class Item {
 

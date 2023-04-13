@@ -1,5 +1,16 @@
 package api.domains.dtos;
 
 import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
 
-public record ProficiencyDTO (@NotEmpty(message = "The 'name' cannot be empty or null") String name) {}
+@Data
+@With
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProficiencyDTO {
+
+    @NotEmpty(message = "The 'name' cannot be empty or null")
+    private String name;
+
+}

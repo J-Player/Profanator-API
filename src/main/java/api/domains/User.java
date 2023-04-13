@@ -2,9 +2,7 @@ package api.domains;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Builder;
-import lombok.Data;
-import lombok.With;
+import lombok.*;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -20,6 +18,8 @@ import java.util.stream.Collectors;
 @Data
 @With
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Profile("prod")
 @Table("Profanator_User")
 public class User implements UserDetails {

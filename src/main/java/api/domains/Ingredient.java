@@ -16,6 +16,8 @@ import java.time.Instant;
 @Data
 @With
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table("Ingredient")
 public class Ingredient {
 
