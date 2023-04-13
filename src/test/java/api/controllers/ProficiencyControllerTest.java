@@ -2,8 +2,8 @@ package api.controllers;
 
 import api.domains.Proficiency;
 import api.domains.dtos.ProficiencyDTO;
-import api.mappers.ProficiencyMapper;
 import api.services.impl.ProficiencyService;
+import api.utils.ProficiencyCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -14,7 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static api.utils.ProficiencyCreator.proficiency;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -28,8 +27,8 @@ class ProficiencyControllerTest {
     @Mock
     private ProficiencyService proficiencyService;
 
-    private final Proficiency proficiency = proficiency();
-    private final ProficiencyDTO proficiencyDTO = ProficiencyMapper.INSTANCE.toProficiencyDTO(proficiency);
+    private final Proficiency proficiency = ProficiencyCreator.proficiency();
+    private final ProficiencyDTO proficiencyDTO = ProficiencyCreator.proficiencyDTO();
 
     @BeforeEach
     void setUp() {
