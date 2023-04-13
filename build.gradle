@@ -23,8 +23,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.15' //SPRINGDOC OPENAPI WEBFLUX
     compileOnly 'org.projectlombok:lombok' //LOMBOK
     annotationProcessor 'org.projectlombok:lombok' //LOMBOK
-    implementation 'org.mapstruct:mapstruct:1.5.3.Final' //MAPSTRUCT
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final' //MAPSTRUCT
+    implementation 'org.modelmapper:modelmapper:3.1.1' //MODELMAPPER
     testImplementation 'org.springframework.boot:spring-boot-starter-test' //SPRING TEST
     testImplementation 'org.springframework.security:spring-security-test' //SPRING SECURITY TEST
     testImplementation 'io.projectreactor:reactor-test' //REACTOR TEST
