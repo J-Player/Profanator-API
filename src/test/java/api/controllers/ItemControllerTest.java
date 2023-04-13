@@ -28,7 +28,7 @@ class ItemControllerTest {
     private ItemService itemService;
 
     private final Item item = ItemCreator.item();
-    private final ItemDTO itemDTO = ItemCreator.itemToSave();
+    private final ItemDTO itemDTO = ItemCreator.itemDTO();
 
     @BeforeEach
     void setUp() {
