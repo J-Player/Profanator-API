@@ -47,10 +47,6 @@ class ProficiencyServiceTest {
                 .thenReturn(Flux.just(proficiency));
         BDDMockito.when(proficiencyRepository.save(any(Proficiency.class)))
                 .thenReturn(Mono.just(proficiency));
-        BDDMockito.when(proficiencyRepository.save(proficiency))
-                .thenReturn(Mono.empty());
-        BDDMockito.when(proficiencyRepository.delete(any(Proficiency.class)))
-                .thenReturn(Mono.empty());
         BDDMockito.when(proficiencyRepository.delete(any(Proficiency.class)))
                 .thenReturn(Mono.empty());
         BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any());
