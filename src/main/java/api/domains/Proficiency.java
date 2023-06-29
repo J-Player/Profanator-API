@@ -1,6 +1,6 @@
 package api.domains;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -16,13 +16,16 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("Proficiency")
+@Table("Proficiencies")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Proficiency {
 
     @Id
+    @EqualsAndHashCode.Include
     private Long id;
 
-    @NotEmpty(message = "The 'name' cannot be empty or null")
+    @EqualsAndHashCode.Include
+    @NotBlank(message = "The 'name' cannot be empty or null")
     private String name;
 
     @Column("created_at")

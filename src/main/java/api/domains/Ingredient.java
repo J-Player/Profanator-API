@@ -1,7 +1,7 @@
 package api.domains;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,21 +18,26 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("Ingredient")
+@Table("Ingredients")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Ingredient {
 
     @Id
+    @EqualsAndHashCode.Include
     private Long id;
 
-    @NotEmpty(message = "The 'product' cannot be empty or null")
+    @NotBlank(message = "The 'product' cannot be empty or null")
+    @EqualsAndHashCode.Include
     private String product;
 
-    @NotEmpty(message = "The 'name' cannot be empty or null")
+    @NotBlank(message = "The 'name' cannot be empty or null")
+    @EqualsAndHashCode.Include
     private String name;
 
     @NotNull(message = "The 'quantity' cannot be empty or null")
     @Min(value = 1, message = "The minimum value is 1.")
     @Builder.Default
+    @EqualsAndHashCode.Include
     private int quantity = 1;
 
     @Column("created_at")
