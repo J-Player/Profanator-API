@@ -1,7 +1,7 @@
 package api.domains.dtos;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -14,7 +14,7 @@ public class ItemDTO {
 
         private String proficiency;
 
-        @NotEmpty(message = "The 'name' cannot be empty or null")
+        @NotBlank(message = "The 'name' cannot be empty or null")
         private String name;
 
         @NotNull(message = "The 'qtByProduction' cannot be empty or null")

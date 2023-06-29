@@ -1,7 +1,7 @@
 package api.domains.dtos;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -12,10 +12,10 @@ import lombok.*;
 @AllArgsConstructor
 public class IngredientDTO {
 
-        @NotEmpty(message = "The 'product' cannot be empty or null")
+        @NotBlank(message = "The 'product' cannot be empty or null")
         private String product;
 
-        @NotEmpty(message = "The 'name' cannot be empty or null")
+        @NotBlank(message = "The 'name' cannot be empty or null")
         private String name;
 
         @NotNull(message = "The 'quantity' cannot be empty or null")
