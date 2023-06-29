@@ -20,7 +20,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator' //SPRING ACTUATOR
     developmentOnly 'org.springframework.boot:spring-boot-devtools' //SPRING DEV-TOOLS
     runtimeOnly 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE' //R2DBC POSTGRESQL DRIVER
-    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.15' //SPRINGDOC OPENAPI WEBFLUX
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4' //SPRINGDOC OPENAPI WEBFLUX
     compileOnly 'org.projectlombok:lombok' //LOMBOK
     annotationProcessor 'org.projectlombok:lombok' //LOMBOK
     implementation 'org.modelmapper:modelmapper:3.1.1' //MODELMAPPER
