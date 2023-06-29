@@ -34,8 +34,8 @@ public class SecurityConfig {
         final String ADMIN = "ADMIN";
         //@formatter:off
         return httpSecurity
-                .csrf().disable()
-                .authorizeExchange()
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(c -> c
                     .pathMatchers(HttpMethod.GET,
                             "/proficiencies/**",
                             "/items/**", "/ingredients/**").authenticated()
@@ -46,11 +46,9 @@ public class SecurityConfig {
                     .pathMatchers("/swagger-ui.html",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
-                        "/webjars/**").authenticated()
-                .and()
-                    .formLogin().disable()
-                    .httpBasic()
-                .and()
+                        "/webjars/**").authenticated())
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .build();
         //@formatter:on
     }
