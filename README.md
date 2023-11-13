@@ -26,7 +26,7 @@ Atualmente, com a versão **Pré-Alpha** do Profane, há um total de **183 itens
 - Spring Boot (Webflux, Data R2DBC, Validation, Security)
 - Driver R2DBC Postgres
 - Lombok
-- Mapstruct
+- ModelMapper
 
 ## Contato
 Para mais informações, feedbacks ou dúvidas, contate-me.
