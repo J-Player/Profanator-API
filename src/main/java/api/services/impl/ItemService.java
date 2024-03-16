@@ -1,7 +1,7 @@
 package api.services.impl;
 
-import api.domains.Item;
-import api.repositories.ItemRepository;
+import api.models.entities.Item;
+import api.repositories.impl.ItemRepository;
 import api.services.IService;
 import api.services.cache.CacheService;
 import lombok.RequiredArgsConstructor;
@@ -9,17 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.Optional;
-import java.util.UUID;
 
 import static api.configs.cache.CacheConfig.ITEM_CACHE_NAME;
 import static api.configs.cache.CacheConfig.TTL;
@@ -36,7 +35,7 @@ public class ItemService implements IService<Item> {
 
     @Override
     @Cacheable
-    public Mono<Item> findById(UUID id) {
+    public Mono<Item> findById(Integer id) {
         return itemRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException(null))
                 .onErrorResume(ex -> {
@@ -58,30 +57,19 @@ public class ItemService implements IService<Item> {
     }
 
     @Override
-    @Cacheable
-    public Flux<Item> findAll() {
-        return itemRepository.findAll(Sort.by("id"))
-                .onErrorResume(ex -> {
-                    cacheService.evictCache(ITEM_CACHE_NAME);
-                    return Flux.error(ex);
-                })
-                .cache(TTL);
+    public Mono<Page<Item>> findAll(Pageable pageable) {
+        return itemRepository.findAllBy(pageable)
+                .collectList()
+                .zipWith(itemRepository.count())
+                .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
     }
 
-    @Cacheable
-    public Flux<Item> findAllByProficiency(String proficiency) {
+    public Mono<Page<Item>> findAllByProficiency(String proficiency, Pageable pageable) {
         return proficiencyService.findByName(proficiency)
-                .flatMapMany(p -> itemRepository.findAllByProficiencyIgnoreCase(p.getName(), Sort.by("id")))
-                .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao recuperar os Items da proficiency {}: {}", proficiency, ex.getMessage());
-                    StackWalker walker = StackWalker.getInstance();
-                    Optional<String> optional = walker.walk(frames -> frames
-                            .findFirst()
-                            .map(StackWalker.StackFrame::getMethodName));
-                    optional.ifPresent(methodName -> cacheService.evictCache(ITEM_CACHE_NAME, methodName, proficiency));
-                    return Flux.error(ex);
-                })
-                .cache(TTL);
+                .flatMapMany(p -> itemRepository.findAllByProficiencyIgnoreCase(p.getName(), pageable))
+                .collectList()
+                .zipWith(itemRepository.count())
+                .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
     }
 
     @Override
@@ -116,7 +104,7 @@ public class ItemService implements IService<Item> {
 
     @Override
     @CacheEvict(allEntries = true)
-    public Mono<Void> delete(UUID id) {
+    public Mono<Void> delete(Integer id) {
         return findById(id)
                 .flatMap(item -> itemRepository.delete(item).thenReturn(item))
                 .doOnSuccess(item -> log.info("Item excluído com sucesso! ({})", item))
@@ -125,6 +113,10 @@ public class ItemService implements IService<Item> {
                     return Mono.error(ex);
                 })
                 .then();
+    }
+
+    public Mono<Void> deleteAll() {
+        return itemRepository.deleteAll();
     }
 
     private <T> Mono<T> monoResponseStatusNotFoundException(String item) {

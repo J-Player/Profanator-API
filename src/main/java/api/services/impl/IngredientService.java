@@ -1,7 +1,7 @@
 package api.services.impl;
 
-import api.domains.Ingredient;
-import api.repositories.IngredientRepository;
+import api.models.entities.Ingredient;
+import api.repositories.impl.IngredientRepository;
 import api.services.IService;
 import api.services.cache.CacheService;
 import lombok.RequiredArgsConstructor;
@@ -9,17 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.Optional;
-import java.util.UUID;
 
 import static api.configs.cache.CacheConfig.INGREDIENT_CACHE_NAME;
 import static api.configs.cache.CacheConfig.TTL;
@@ -35,9 +34,9 @@ public class IngredientService implements IService<Ingredient> {
 
     @Override
     @Cacheable
-    public Mono<Ingredient> findById(UUID id) {
+    public Mono<Ingredient> findById(Integer id) {
         return ingredientRepository.findById(id)
-                .switchIfEmpty(monoResponseStatusNotFoundException())
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found")))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao recuperar o Ingredient (id = {}): {}", id, ex.getMessage());
                     return Mono.error(ex);
@@ -47,29 +46,19 @@ public class IngredientService implements IService<Ingredient> {
 
     @Override
     @Cacheable
-    public Flux<Ingredient> findAll() {
-        return ingredientRepository.findAll(Sort.by("product", "name"))
-                .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao recuperar os Ingredients: {}", ex.getMessage());
-                    cacheService.evictCache(INGREDIENT_CACHE_NAME);
-                    return Mono.error(ex);
-                })
-                .cache(TTL);
+    public Mono<Page<Ingredient>> findAll(Pageable pageable) {
+       return ingredientRepository.findAllBy(pageable)
+               .collectList()
+               .zipWith(ingredientRepository.count())
+               .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
     }
 
     @Cacheable
-    public Flux<Ingredient> findAllByProduct(String product) {
-        return ingredientRepository.findByProductIgnoreCase(product, Sort.by("product", "name"))
-                .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao recuperar os Ingredients do item {}: {}", product, ex.getMessage());
-                    StackWalker walker = StackWalker.getInstance();
-                    Optional<String> optional = walker.walk(frames -> frames
-                            .findFirst()
-                            .map(StackWalker.StackFrame::getMethodName));
-                    optional.ifPresent(methodName -> cacheService.evictCache(INGREDIENT_CACHE_NAME, methodName, product));
-                    return Mono.error(ex);
-                })
-                .cache(TTL);
+    public Mono<Page<Ingredient>> findAllByProduct(String product, Pageable pageable) {
+        return ingredientRepository.findAllByProductIgnoreCase(product, pageable)
+                .collectList()
+                .zipWith(ingredientRepository.count())
+                .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
     }
 
     @Override
@@ -104,7 +93,7 @@ public class IngredientService implements IService<Ingredient> {
 
     @Override
     @CacheEvict(allEntries = true)
-    public Mono<Void> delete(UUID id) {
+    public Mono<Void> delete(Integer id) {
         return findById(id)
                 .flatMap(ingredient -> ingredientRepository.delete(ingredient).thenReturn(ingredient))
                 .doOnSuccess(ingredient -> log.info("Ingredient excluído com sucesso! ({})", ingredient))
@@ -115,9 +104,8 @@ public class IngredientService implements IService<Ingredient> {
                 .then();
     }
 
-    private <T> Mono<T> monoResponseStatusNotFoundException() {
-        String message = "Ingredient not found";
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, message));
+    public Mono<Void> deleteAll() {
+        return ingredientRepository.deleteAll();
     }
 
 }

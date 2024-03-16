@@ -3,7 +3,6 @@ package api.configs.cache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.cache.support.SimpleCacheManager;
@@ -15,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Configuration
-@EnableCaching
+//@EnableCaching //FIXME: Cache não está funcionando corretamente para retornos paginados.
 public class CacheConfig implements CachingConfigurer {
 
     public static final String PROFICIENCY_CACHE_NAME = "proficiencies";

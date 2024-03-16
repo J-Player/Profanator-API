@@ -1,37 +1,46 @@
 package api.util;
 
-import api.domains.User;
-import api.domains.dtos.UserDTO;
-
-import java.util.UUID;
-
-import static java.util.UUID.randomUUID;
+import api.integration.constraint.IntegrationConstraints;
+import api.mappers.UserMapper;
+import api.models.entities.User;
+import api.models.security.RegisterRequest;
 
 public abstract class UserCreator {
 
-    private static final UUID ID = randomUUID();
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
-    private static final String AUTHORITIES = "ROLE_USER";
-
-    public static User user() {
+    public static User admin() {
         return User.builder()
-                .id(ID)
-                .username(USERNAME)
-                .password(PASSWORD)
-                .authorities(AUTHORITIES)
+                .username(IntegrationConstraints.ADMIN_USER)
+                .password(IntegrationConstraints.ADMIN_PASSWORD)
+                .role(IntegrationConstraints.ADMIN_ROLE)
                 .build();
     }
 
-    public static UserDTO userDTO() {
-        return UserDTO.builder()
-                .username(USERNAME)
-                .password(PASSWORD)
-                .accountNonLocked(true)
-                .accountNonExpired(true)
-                .credentialsNonExpired(true)
-                .enabled(true)
+    public static User user() {
+        return User.builder()
+                .username(IntegrationConstraints.REGULAR_USER)
+                .password(IntegrationConstraints.REGULAR_PASSWORD)
+                .role(IntegrationConstraints.USER_ROLE)
                 .build();
+    }
+
+    public static RegisterRequest registerRequest() {
+        return UserMapper.INSTANCE.toRegisterRequest(user());
+    }
+
+    public static User invalidUser() {
+        return user().withUsername(null);
+    }
+
+    public static User userToRead() {
+        return user().withUsername(IntegrationConstraints.REGULAR_USER.concat("_to_read"));
+    }
+
+    public static User userToUpdate() {
+        return user().withUsername(IntegrationConstraints.REGULAR_USER.concat("_to_update"));
+    }
+
+    public static User userToDelete() {
+        return user().withUsername(IntegrationConstraints.REGULAR_USER.concat("_to_delete"));
     }
 
 }

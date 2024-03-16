@@ -1,8 +1,8 @@
 package api.controllers;
 
-import api.configs.BlockHoundTest;
-import api.domains.Proficiency;
-import api.domains.dtos.ProficiencyDTO;
+import api.controllers.impl.ProficiencyController;
+import api.models.dtos.ProficiencyDTO;
+import api.models.entities.Proficiency;
 import api.services.impl.ProficiencyService;
 import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.*;
@@ -10,16 +10,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import reactor.blockhound.BlockHound;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Proficiency Controller Test")
@@ -37,29 +36,18 @@ class ProficiencyControllerTest {
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(proficiencyService.findById(any(UUID.class)))
+        BDDMockito.when(proficiencyService.findById(anyInt()))
                 .thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyService.findByName(anyString()))
                 .thenReturn(Mono.just(proficiency));
-        BDDMockito.when(proficiencyService.findAll())
-                .thenReturn(Flux.just(proficiency));
+        BDDMockito.when(proficiencyService.findAll(any(Pageable.class)))
+                .thenReturn(Mono.just(new PageImpl<>(List.of(proficiency))));
         BDDMockito.when(proficiencyService.save(any(Proficiency.class)))
                 .thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyService.update(any(Proficiency.class)))
                 .thenReturn(Mono.empty());
-        BDDMockito.when(proficiencyService.delete(any(UUID.class)))
+        BDDMockito.when(proficiencyService.delete(anyInt()))
                 .thenReturn(Mono.empty());
-    }
-
-    @BeforeAll
-    static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
     }
 
     @Test
@@ -74,7 +62,7 @@ class ProficiencyControllerTest {
     @Test
     @DisplayName("findById | Returns a proficiency when successful")
     void findById() {
-        StepVerifier.create(proficiencyController.findById(UUID.randomUUID()))
+        StepVerifier.create(proficiencyController.findById(1))
                 .expectSubscription()
                 .expectNext(proficiency)
                 .verifyComplete();
@@ -83,9 +71,9 @@ class ProficiencyControllerTest {
     @Test
     @DisplayName("listAll | Returns all proficiencies when successful")
     void listAll() {
-        StepVerifier.create(proficiencyController.listAll())
+        StepVerifier.create(proficiencyController.listAll(Pageable.unpaged()))
                 .expectSubscription()
-                .expectNext(proficiency)
+                .expectNext(new PageImpl<>(List.of(proficiency)))
                 .verifyComplete();
     }
 
@@ -101,7 +89,7 @@ class ProficiencyControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-        StepVerifier.create(proficiencyController.update(UUID.randomUUID(), proficiencyDTO))
+        StepVerifier.create(proficiencyController.update(1, proficiencyDTO))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -109,7 +97,7 @@ class ProficiencyControllerTest {
     @Test
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
-        StepVerifier.create(proficiencyController.delete(UUID.randomUUID()))
+        StepVerifier.create(proficiencyController.delete(1))
                 .expectSubscription()
                 .verifyComplete();
     }

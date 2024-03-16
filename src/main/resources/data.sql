@@ -1,4 +1,4 @@
-INSERT INTO Proficiency(name) VALUES
+INSERT INTO Proficiencies(name) VALUES
     ('Alchemy'),
     ('Architecture'),
     ('Blacksmith'),
@@ -7,7 +7,7 @@ INSERT INTO Proficiency(name) VALUES
     ('Tailoring'),
     ('Tinkering');
 
-INSERT INTO Item(proficiency, name, qtbyproduction) VALUES
+INSERT INTO Items(proficiency, name, qtbyproduction) VALUES
     (null, 'Ambar', 1),
     (null, 'Blood Berry', 1),
     (null, 'Blue Mushroom', 1),
@@ -199,7 +199,7 @@ INSERT INTO Item(proficiency, name, qtbyproduction) VALUES
     ('Tinkering', 'Sacred Shell Medallion', 1),
     ('Tinkering', 'Sigil of The Guardian', 1);
 
-INSERT INTO Ingredient(product, name, quantity) VALUES
+INSERT INTO Ingredients(product, name, quantity) VALUES
     ('Ambusher''s Ring', 'Silver Ingot', 2),
     ('Ambusher''s Ring', 'Ixenite Ingot', 1),
     ('Ambusher''s Ring', 'Minor Purple Shard', 1),

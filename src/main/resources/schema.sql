@@ -1,7 +1,5 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-CREATE TABLE IF NOT EXISTS Proficiency(
-	id UUID DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS Proficiencies(
+	id SERIAL,
 	name VARCHAR(255) UNIQUE,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	updated_at TIMESTAMPTZ,
@@ -9,8 +7,8 @@ CREATE TABLE IF NOT EXISTS Proficiency(
 	PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS Item(
-	id UUID DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS Items(
+	id SERIAL,
 	proficiency VARCHAR(255),
 	name VARCHAR(255) NOT NULL UNIQUE,
 	qtbyproduction INTEGER NOT NULL CHECK (qtbyproduction > 0),
@@ -18,11 +16,11 @@ CREATE TABLE IF NOT EXISTS Item(
 	updated_at TIMESTAMPTZ,
 	version INTEGER,
 	PRIMARY KEY (id),
-	FOREIGN KEY (proficiency) REFERENCES Proficiency(name) ON UPDATE CASCADE
+	FOREIGN KEY (proficiency) REFERENCES Proficiencies(name) ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Ingredient(
-	id UUID DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS Ingredients(
+	id SERIAL,
 	product VARCHAR(255) NOT NULL,
 	name VARCHAR(255) NOT NULL,
 	quantity INTEGER NOT NULL CHECK (quantity > 0),
@@ -30,19 +28,34 @@ CREATE TABLE IF NOT EXISTS Ingredient(
 	updated_at TIMESTAMPTZ,
 	version INTEGER,
 	PRIMARY KEY (id),
-	FOREIGN KEY (product) REFERENCES Item(name) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (name) REFERENCES Item(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (product) REFERENCES Items(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (name) REFERENCES Items(name) ON DELETE CASCADE ON UPDATE CASCADE,
 	UNIQUE (product, name)
 );
 
-CREATE TABLE IF NOT EXISTS Profanator_User(
-    id UUID DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS Users(
+    id SERIAL,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    authorities VARCHAR(255) NOT NULL,
-    accountnonexpired BOOLEAN DEFAULT TRUE,
+    role VARCHAR(255) NOT NULL,
     accountnonlocked BOOLEAN DEFAULT TRUE,
+    accountnonexpired BOOLEAN DEFAULT TRUE,
     credentialsnonexpired BOOLEAN DEFAULT TRUE,
     enabled BOOLEAN DEFAULT TRUE,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMPTZ,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS Trades(
+    id SERIAL,
+    item VARCHAR(255) NOT NULL,
+    quantity INTEGER NOT NULL,
+    price INTEGER NOT NULL,
+    seller VARCHAR(255) NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMPTZ,
+    FOREIGN KEY (item) REFERENCES Items(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (seller) REFERENCES Users(username) ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY (id)
 );

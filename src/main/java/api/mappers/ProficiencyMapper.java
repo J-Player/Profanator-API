@@ -1,7 +1,7 @@
 package api.mappers;
 
-import api.domains.Proficiency;
-import api.domains.dtos.ProficiencyDTO;
+import api.models.dtos.ProficiencyDTO;
+import api.models.entities.Proficiency;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

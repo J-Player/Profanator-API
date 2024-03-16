@@ -1,8 +1,8 @@
 package api.services;
 
-import api.configs.BlockHoundTest;
-import api.domains.User;
-import api.repositories.UserRepository;
+import api.exceptions.ResourceNotFoundException;
+import api.models.entities.User;
+import api.repositories.impl.UserRepository;
 import api.services.impl.UserService;
 import api.util.UserCreator;
 import org.junit.jupiter.api.*;
@@ -10,17 +10,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.server.ResponseStatusException;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.UUID;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("User Service Test")
@@ -33,28 +32,18 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    private final User user = UserCreator.user();
-
-    @BeforeAll
-    public static void blockHound() {
-        BlockHound.install();
-    }
-
-    @Test
-    @Order(-1)
-    @DisplayName("[BlockHound] Check if BlockHound is working")
-    void blockHoundWorks() {
-        BlockHoundTest.test();
-    }
+    private final User user = UserCreator.user().withId(1);
 
     @BeforeEach
     void setUp() {
-        BDDMockito.when(userRepository.findById(any(UUID.class)))
+        BDDMockito.when(userRepository.findById(anyInt()))
                 .thenReturn(Mono.just(user));
-        BDDMockito.when(userRepository.findByUsername(anyString()))
+        BDDMockito.when(userRepository.findByUsernameIgnoreCase(anyString()))
                 .thenReturn(Mono.just(user));
-        BDDMockito.when(userRepository.findAll())
+        BDDMockito.when(userRepository.findAllBy(any(Pageable.class)))
                 .thenReturn(Flux.just(user));
+        BDDMockito.when(userRepository.count())
+                .thenReturn(Mono.just(1L));
         BDDMockito.when(userRepository.save(any(User.class)))
                 .thenReturn(Mono.just(user));
         BDDMockito.when(userRepository.delete(any(User.class)))
@@ -64,7 +53,7 @@ class UserServiceTest {
     @Test
     @DisplayName("findById | Returns a mono of user when successful")
     void findById() {
-        StepVerifier.create(userService.findById(UUID.randomUUID()))
+        StepVerifier.create(userService.findById(1))
                 .expectSubscription()
                 .expectNext(user)
                 .verifyComplete();
@@ -73,11 +62,11 @@ class UserServiceTest {
     @Test
     @DisplayName("findById | Returns a mono error when user does not exists")
     void findById_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(userRepository.findById(any(UUID.class)))
+        BDDMockito.when(userRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(userService.findById(UUID.randomUUID()))
+        StepVerifier.create(userService.findById(1))
                 .expectSubscription()
-                .expectError(ResponseStatusException.class)
+                .expectError(ResourceNotFoundException.class)
                 .verify();
     }
 
@@ -93,20 +82,22 @@ class UserServiceTest {
     @Test
     @DisplayName("findByName | Returns a mono error when user does not exists")
     void findByName_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(userRepository.findByUsername(anyString()))
+        BDDMockito.when(userRepository.findByUsernameIgnoreCase(anyString()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(userService.findByName(""))
                 .expectSubscription()
-                .expectError(ResponseStatusException.class)
+                .expectError(ResourceNotFoundException.class)
                 .verify();
     }
 
     @Test
     @DisplayName("findAll | Returns a flux of user when successful")
     void findAll() {
-        StepVerifier.create(userService.findAll())
+        Pageable pageable = Pageable.ofSize(100);
+        List<User> userList = List.of(this.user);
+        StepVerifier.create(userService.findAll(pageable))
                 .expectSubscription()
-                .expectNext(user)
+                .expectNext(new PageImpl<>(userList, pageable, userList.size()))
                 .verifyComplete();
     }
 
@@ -130,18 +121,18 @@ class UserServiceTest {
     @Test
     @DisplayName("update | Returns mono error when user does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(userRepository.findById(any(UUID.class)))
+        BDDMockito.when(userRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(userService.update(user))
                 .expectSubscription()
-                .expectError(ResponseStatusException.class)
+                .expectError(ResourceNotFoundException.class)
                 .verify();
     }
 
     @Test
     @DisplayName("delete | removes the user when successful")
     void delete() {
-        StepVerifier.create(userService.delete(UUID.randomUUID()))
+        StepVerifier.create(userService.delete(1))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -150,11 +141,11 @@ class UserServiceTest {
     @Test
     @DisplayName("delete | Returns mono error when user does not exists")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(userRepository.findById(any(UUID.class)))
+        BDDMockito.when(userRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(userService.delete(UUID.randomUUID()))
+        StepVerifier.create(userService.delete(1))
                 .expectSubscription()
-                .expectError(ResponseStatusException.class)
+                .expectError(ResourceNotFoundException.class)
                 .verify();
     }
 

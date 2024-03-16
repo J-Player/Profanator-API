@@ -1,20 +1,14 @@
 package api.util;
 
-import api.domains.Proficiency;
-import api.domains.dtos.ProficiencyDTO;
-
-import java.util.UUID;
-
-import static java.util.UUID.randomUUID;
+import api.models.dtos.ProficiencyDTO;
+import api.models.entities.Proficiency;
 
 public abstract class ProficiencyCreator {
 
-    private static final UUID ID = randomUUID();
     protected static final String NAME = "Proficiency";
 
     public static Proficiency proficiency() {
         return Proficiency.builder()
-                .id(ID)
                 .name(NAME)
                 .build();
     }
@@ -26,9 +20,19 @@ public abstract class ProficiencyCreator {
     }
 
     public static ProficiencyDTO invalidProficiencyDTO() {
-        return ProficiencyDTO.builder()
-                .name(null)
-                .build();
+        return proficiencyDTO().withName(null);
+    }
+
+    public static Proficiency ProficiencyToRead() {
+        return proficiency().withName(NAME.concat("_to_read"));
+    }
+
+    public static Proficiency proficiencyToUpdate() {
+        return proficiency().withName(NAME.concat("_to_update"));
+    }
+
+    public static Proficiency proficiencyToDelete() {
+        return proficiency().withName(NAME.concat("_to_delete"));
     }
 
 }

@@ -1,22 +1,16 @@
 package api.util;
 
-import api.domains.Ingredient;
-import api.domains.dtos.IngredientDTO;
-
-import java.util.UUID;
-
-import static java.util.UUID.randomUUID;
+import api.models.dtos.IngredientDTO;
+import api.models.entities.Ingredient;
 
 public abstract class IngredientCreator {
 
-    private static final UUID ID = randomUUID();
-    private static final String PRODUCT = ItemCreator.NAME.concat("_1");
-    private static final String NAME = ItemCreator.NAME.concat("_2");
+    private static final String PRODUCT = ItemCreator.NAME;
+    private static final String NAME = PRODUCT.concat("_to_save");
     private static final int QUANTITY = 1;
 
     public static Ingredient ingredient() {
         return Ingredient.builder()
-                .id(ID)
                 .product(PRODUCT)
                 .name(NAME)
                 .quantity(QUANTITY)
@@ -37,6 +31,21 @@ public abstract class IngredientCreator {
                 .name(null)
                 .quantity(0)
                 .build();
+    }
+
+    public static Ingredient ingredientToRead() {
+        return ingredient()
+                .withName(ItemCreator.itemToRead().getName());
+    }
+
+    public static Ingredient ingredientToUpdate() {
+        return ingredient()
+                .withName(ItemCreator.itemToUpdate().getName());
+    }
+
+    public static Ingredient ingredientToDelete() {
+        return ingredient()
+                .withName(ItemCreator.itemToDelete().getName());
     }
 
 }

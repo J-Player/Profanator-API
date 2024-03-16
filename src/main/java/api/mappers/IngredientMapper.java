@@ -1,7 +1,7 @@
 package api.mappers;
 
-import api.domains.Ingredient;
-import api.domains.dtos.IngredientDTO;
+import api.models.dtos.IngredientDTO;
+import api.models.entities.Ingredient;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
