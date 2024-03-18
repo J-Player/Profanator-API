@@ -1,15 +1,10 @@
 package api.controllers;
 
-<<<<<<< HEAD
 import api.controllers.impl.UserController;
 import api.models.entities.User;
 import api.models.security.RegisterRequest;
-=======
-import api.domains.User;
-import api.domains.dtos.UserDTO;
->>>>>>> main
 import api.services.impl.UserService;
-import api.utils.UserCreator;
+import api.util.UserCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -18,23 +13,16 @@ import org.mockito.Mock;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-<<<<<<< HEAD
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.List;
 
-=======
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
->>>>>>> main
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("User Controller Test")
-@TestMethodOrder(MethodOrderer.DisplayName.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserControllerTest {
 
     @InjectMocks
@@ -44,7 +32,6 @@ class UserControllerTest {
     private UserService userService;
 
     private final User user = UserCreator.user();
-<<<<<<< HEAD
     private final RegisterRequest registerRequest = UserCreator.registerRequest();
 
     @BeforeEach
@@ -56,27 +43,10 @@ class UserControllerTest {
         BDDMockito.when(userService.findAll(Pageable.unpaged()))
                 .thenReturn(Mono.just(new PageImpl<>(List.of(user))));
         BDDMockito.when(userService.save(any(User.class)))
-=======
-    private final UserDTO userDTO = UserCreator.userDTO();
-
-    @BeforeEach
-    void setUp() {
-        BDDMockito.when(userService.findById(anyLong()))
                 .thenReturn(Mono.just(user));
-        BDDMockito.when(userService.findByName(anyString()))
-                .thenReturn(Mono.just(user));
-        BDDMockito.when(userService.findAll())
-                .thenReturn(Flux.just(user));
-        BDDMockito.when(userService.save(any(UserDTO.class)))
->>>>>>> main
-                .thenReturn(Mono.just(user));
-        BDDMockito.when(userService.update(any(UserDTO.class), anyLong()))
+        BDDMockito.when(userService.update(any(User.class)))
                 .thenReturn(Mono.empty());
-<<<<<<< HEAD
         BDDMockito.when(userService.delete(anyInt()))
-=======
-        BDDMockito.when(userService.delete(anyLong()))
->>>>>>> main
                 .thenReturn(Mono.empty());
     }
 
@@ -92,11 +62,7 @@ class UserControllerTest {
     @Test
     @DisplayName("findById | Returns a user when successful")
     void findById() {
-<<<<<<< HEAD
         StepVerifier.create(userController.findById(1))
-=======
-        StepVerifier.create(userController.findById(1L))
->>>>>>> main
                 .expectSubscription()
                 .expectNext(user)
                 .verifyComplete();
@@ -125,11 +91,7 @@ class UserControllerTest {
     @Test
     @DisplayName("update | Returns status 204 (no content) when successful")
     void update() {
-<<<<<<< HEAD
         StepVerifier.create(userController.update(1, registerRequest))
-=======
-        StepVerifier.create(userController.update(userDTO, 1L))
->>>>>>> main
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -137,11 +99,7 @@ class UserControllerTest {
     @Test
     @DisplayName("delete | Returns status 204 (no content) when successful")
     void delete() {
-<<<<<<< HEAD
         StepVerifier.create(userController.delete(1))
-=======
-        StepVerifier.create(userController.delete(1L))
->>>>>>> main
                 .expectSubscription()
                 .verifyComplete();
     }

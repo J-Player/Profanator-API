@@ -1,18 +1,12 @@
 package api.services;
 
-<<<<<<< HEAD
 import api.models.entities.Item;
 import api.repositories.impl.ItemRepository;
-=======
-import api.domains.Item;
-import api.domains.dtos.ItemDTO;
-import api.repositories.ItemRepository;
->>>>>>> main
 import api.services.cache.CacheService;
 import api.services.impl.ItemService;
 import api.services.impl.ProficiencyService;
-import api.utils.ItemCreator;
-import api.utils.ProficiencyCreator;
+import api.util.ItemCreator;
+import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -26,16 +20,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-<<<<<<< HEAD
 import java.util.List;
 
-=======
->>>>>>> main
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Item Service Test")
-@TestMethodOrder(MethodOrderer.DisplayName.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class ItemServiceTest {
 
     @InjectMocks
@@ -50,20 +41,11 @@ class ItemServiceTest {
     @Mock
     private CacheService cacheService;
 
-<<<<<<< HEAD
     private final Item item = ItemCreator.item().withId(1);
 
     @BeforeEach
     void setUp() {
         BDDMockito.when(itemRepository.findById(anyInt()))
-=======
-    private final Item item = ItemCreator.item();
-    private final ItemDTO itemDTO = ItemCreator.itemDTO();
-
-    @BeforeEach
-    void setUp() {
-        BDDMockito.when(itemRepository.findById(anyLong()))
->>>>>>> main
                 .thenReturn(Mono.just(item));
         BDDMockito.when(itemRepository.findByNameIgnoreCase(anyString()))
                 .thenReturn(Mono.just(item));
@@ -83,11 +65,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("findById | Returns a mono of item when successful")
     void findById() {
-<<<<<<< HEAD
         StepVerifier.create(itemService.findById(1))
-=======
-        StepVerifier.create(itemService.findById(1L))
->>>>>>> main
                 .expectSubscription()
                 .expectNext(item)
                 .verifyComplete();
@@ -96,15 +74,9 @@ class ItemServiceTest {
     @Test
     @DisplayName("findById | Returns a mono error when item does not exists")
     void findById_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-<<<<<<< HEAD
         BDDMockito.when(itemRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(itemService.findById(1))
-=======
-        BDDMockito.when(itemRepository.findById(anyLong()))
-                .thenReturn(Mono.empty());
-        StepVerifier.create(itemService.findById(1L))
->>>>>>> main
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -157,7 +129,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("save | creates an item when successful")
     void save() {
-        StepVerifier.create(itemService.save(itemDTO))
+        StepVerifier.create(itemService.save(item))
                 .expectSubscription()
                 .expectNext(item)
                 .verifyComplete();
@@ -166,7 +138,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("update | save updated item and returns empty mono when successful")
     void update() {
-        StepVerifier.create(itemService.update(itemDTO, 1L))
+        StepVerifier.create(itemService.update(item))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -174,13 +146,9 @@ class ItemServiceTest {
     @Test
     @DisplayName("update | Returns mono error when item does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-<<<<<<< HEAD
         BDDMockito.when(itemRepository.findById(anyInt()))
-=======
-        BDDMockito.when(itemRepository.findById(anyLong()))
->>>>>>> main
                 .thenReturn(Mono.empty());
-        StepVerifier.create(itemService.update(itemDTO, 1L))
+        StepVerifier.create(itemService.update(item))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -189,11 +157,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("delete | removes the item when successful")
     void delete() {
-<<<<<<< HEAD
         StepVerifier.create(itemService.delete(1))
-=======
-        StepVerifier.create(itemService.delete(1L))
->>>>>>> main
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -202,15 +166,9 @@ class ItemServiceTest {
     @Test
     @DisplayName("delete | Returns mono error when item does not exists")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-<<<<<<< HEAD
         BDDMockito.when(itemRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(itemService.delete(1))
-=======
-        BDDMockito.when(itemRepository.findById(anyLong()))
-                .thenReturn(Mono.empty());
-        StepVerifier.create(itemService.delete(1L))
->>>>>>> main
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
