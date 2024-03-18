@@ -1,18 +1,19 @@
 package api.services;
 
-import reactor.core.publisher.Flux;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Mono;
 
-public interface IService<T1, T2> {
+public interface IService<T> {
 
-    Mono<T1> findById(Long id);
+    Mono<T> findById(Integer id);
 
-    Flux<T1> findAll();
+    Mono<Page<T>> findAll(Pageable pageable);
 
-    Mono<T1> save(T2 t2);
+    Mono<T> save(T t);
 
-    Mono<Void> update(T2 t2, Long id);
+    Mono<Void> update(T t);
 
-    Mono<Void> delete(Long id);
+    Mono<Void> delete(Integer id);
 
 }

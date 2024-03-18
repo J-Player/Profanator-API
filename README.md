@@ -1,4 +1,4 @@
-# Profanator-API ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/J-Player/Profanator-API/gradle.yml)
+# Profanator-API
 API reativa desenvolvida em **Spring WebFlux** com o propósito de fornecer dados relacionados aos itens do **Profane**.
 
 - [Endpoints](https://github.com/J-Player/Profanator-API#endpoints)

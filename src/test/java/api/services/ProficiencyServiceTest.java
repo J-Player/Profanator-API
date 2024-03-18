@@ -1,28 +1,30 @@
 package api.services;
 
-import api.domains.Proficiency;
-import api.domains.dtos.ProficiencyDTO;
-import api.repositories.ProficiencyRepository;
+import api.models.entities.Proficiency;
+import api.repositories.impl.ProficiencyRepository;
 import api.services.cache.CacheService;
 import api.services.impl.ProficiencyService;
-import api.utils.ProficiencyCreator;
+import api.util.ProficiencyCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Proficiency Service Test")
-@TestMethodOrder(MethodOrderer.DisplayName.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class ProficiencyServiceTest {
 
     @InjectMocks
@@ -34,28 +36,33 @@ class ProficiencyServiceTest {
     @Mock
     private CacheService cacheService;
 
-    private final ProficiencyDTO proficiencyDTO = ProficiencyCreator.proficiencyDTO();
-    private final Proficiency proficiency = ProficiencyCreator.proficiency();
+    private final Proficiency proficiency = ProficiencyCreator.proficiency().withId(1);
 
     @BeforeEach
     void setUp() {
         BDDMockito.when(proficiencyRepository.findByNameIgnoreCase(anyString()))
                 .thenReturn(Mono.just(proficiency));
-        BDDMockito.when(proficiencyRepository.findById(anyLong()))
+        BDDMockito.when(proficiencyRepository.findById(anyInt()))
                 .thenReturn(Mono.just(proficiency));
-        BDDMockito.when(proficiencyRepository.findAll(any(Sort.class)))
+        BDDMockito.when(proficiencyRepository.findAllBy(any(Pageable.class)))
                 .thenReturn(Flux.just(proficiency));
+        BDDMockito.when(proficiencyRepository.count())
+                .thenReturn(Mono.just(1L));
         BDDMockito.when(proficiencyRepository.save(any(Proficiency.class)))
                 .thenReturn(Mono.just(proficiency));
+        BDDMockito.when(proficiencyRepository.save(proficiency))
+                .thenReturn(Mono.empty());
         BDDMockito.when(proficiencyRepository.delete(any(Proficiency.class)))
                 .thenReturn(Mono.empty());
-        BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any());
+        BDDMockito.when(proficiencyRepository.delete(any(Proficiency.class)))
+                .thenReturn(Mono.empty());
+        BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any(Pageable.class));
     }
 
     @Test
     @DisplayName("findById | Returns a mono of proficiency")
     void findById_ReturnMonoProficiency_WhenSuccessful() {
-        StepVerifier.create(proficiencyService.findById(1L))
+        StepVerifier.create(proficiencyService.findById(1))
                 .expectSubscription()
                 .expectNext(proficiency)
                 .verifyComplete();
@@ -64,9 +71,9 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("findById | Returns mono error when proficiency does not exists")
     void findById_ReturnMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(proficiencyRepository.findById(anyLong()))
+        BDDMockito.when(proficiencyRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(proficiencyService.findById(1L))
+        StepVerifier.create(proficiencyService.findById(1))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -95,16 +102,18 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("findAll | Returns a flux of proficiency")
     void findAll_ReturnFluxOfProficiency_WhenSuccessful() {
-        StepVerifier.create(proficiencyService.findAll())
+        Pageable pageable = Pageable.ofSize(100);
+        List<Proficiency> proficiencyList = List.of(proficiency);
+        StepVerifier.create(proficiencyService.findAll(pageable))
                 .expectSubscription()
-                .expectNext(proficiency)
+                .expectNext(new PageImpl<>(proficiencyList, pageable, proficiencyList.size()))
                 .verifyComplete();
     }
 
     @Test
     @DisplayName("save | Create a proficiency in database")
     void save() {
-        StepVerifier.create(proficiencyService.save(proficiencyDTO))
+        StepVerifier.create(proficiencyService.save(proficiency.withId(null)))
                 .expectSubscription()
                 .expectNext(proficiency)
                 .verifyComplete();
@@ -113,7 +122,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("update | Save updated proficiency and returns empty mono when successful")
     void update() {
-        StepVerifier.create(proficiencyService.update(proficiencyDTO, 1L))
+        StepVerifier.create(proficiencyService.update(proficiency))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -121,9 +130,9 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("update | Returns mono error when proficiency does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(proficiencyRepository.findById(anyLong()))
+        BDDMockito.when(proficiencyRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(proficiencyService.update(proficiencyDTO, 1L))
+        StepVerifier.create(proficiencyService.update(proficiency))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -132,7 +141,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("delete | Removes the proficiency when successful")
     void delete() {
-        StepVerifier.create(proficiencyService.delete(1L))
+        StepVerifier.create(proficiencyService.delete(1))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -140,9 +149,9 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("delete | Returns mono error when proficiency does not exist")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
-        BDDMockito.when(proficiencyRepository.findById(anyLong()))
+        BDDMockito.when(proficiencyRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(proficiencyService.delete(1L))
+        StepVerifier.create(proficiencyService.delete(1))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

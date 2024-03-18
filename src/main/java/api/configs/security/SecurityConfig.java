@@ -1,96 +1,89 @@
 package api.configs.security;
 
-import lombok.extern.slf4j.Slf4j;
+import api.models.enums.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.DefaultServerRedirectStrategy;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.ServerRedirectStrategy;
-import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
-import org.springframework.security.web.server.savedrequest.ServerRequestCache;
-import org.springframework.security.web.server.savedrequest.WebSessionServerRequestCache;
-import org.springframework.web.server.ServerWebExchange;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import java.net.URI;
+import java.util.List;
 
-@Slf4j
+@Configuration
 @EnableWebFluxSecurity
+@EnableReactiveMethodSecurity
+@EnableConfigurationProperties(SecurityProperties.class)
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
-        final String ADMIN = "ADMIN";
-        //@formatter:off
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity, SecurityFilter securityFilter) {
+        final String ADMIN = UserRole.ADMIN.name();
+        final String[] whitelist = {
+                "/proficiencies/**",
+                "/items/**",
+                "/ingredients/**",
+        };
+        final String[] swagger = {"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"};
         return httpSecurity
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(c -> c
-                    .pathMatchers(HttpMethod.GET,
-                            "/proficiencies/**",
-                            "/items/**", "/ingredients/**").authenticated()
-                    .pathMatchers("/users/**").hasRole(ADMIN)
-                    .pathMatchers(HttpMethod.POST).hasRole(ADMIN)
-                    .pathMatchers(HttpMethod.PUT).hasRole(ADMIN)
-                    .pathMatchers(HttpMethod.DELETE).hasRole(ADMIN)
-                    .pathMatchers("/swagger-ui.html",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/webjars/**").authenticated())
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .authorizeExchange(authorizeExchangeSpec ->
+                        authorizeExchangeSpec
+                                .pathMatchers(HttpMethod.GET, whitelist).permitAll()
+                                .pathMatchers(HttpMethod.POST, whitelist).hasRole(ADMIN)
+                                .pathMatchers(HttpMethod.PUT, whitelist).hasRole(ADMIN)
+                                .pathMatchers(HttpMethod.DELETE, whitelist).hasRole(ADMIN)
+                                .pathMatchers(HttpMethod.POST, "/users").hasRole(ADMIN)
+                                .pathMatchers(HttpMethod.GET, "/trade/**").permitAll()
+                                .pathMatchers("/auth/**").permitAll()
+                                .pathMatchers("/actuator/**").hasRole(ADMIN)
+                                .pathMatchers(swagger).permitAll()
+                                .anyExchange().authenticated()
+                )
+                .addFilterAt(securityFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .build();
-        //@formatter:on
-    }
-
-    private ServerAuthenticationSuccessHandler authenticationSuccessHandler() {
-        final String location = "swagger-ui.html";
-        return (webFilterExchange, authentication) -> {
-            ServerWebExchange exchange = webFilterExchange.getExchange();
-            ServerRequestCache requestCache = new WebSessionServerRequestCache();
-            ServerRedirectStrategy redirectStrategy = new DefaultServerRedirectStrategy();
-            return requestCache.getRedirectUri(exchange).defaultIfEmpty(URI.create(location))
-                    .flatMap(uri -> redirectStrategy.sendRedirect(exchange, uri));
-        };
-    }
-
-    @Bean
-    @Profile("!prod")
-    protected MapReactiveUserDetailsService userDetailsService() {
-        PasswordEncoder passwordEncoder = passwordEncoder();
-        UserDetails admin = User
-                .withUsername("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
-        UserDetails user = User
-                .withUsername("user")
-                .password(passwordEncoder.encode("user"))
-                .roles("USER")
-                .build();
-        return new MapReactiveUserDetailsService(admin, user);
     }
 
     @Bean
     protected ReactiveAuthenticationManager authenticationManager(@Autowired ReactiveUserDetailsService userDetailsService) {
-        return new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
+        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
+        authenticationManager.setPasswordEncoder(passwordEncoder());
+        return authenticationManager;
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        //TODO: Configurar adequadamente o CORS
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
 }
-
-

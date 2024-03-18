@@ -1,0 +1,26 @@
+spring:
+  docker:
+    compose:
+      profiles:
+        active: dev
+      file: docker-compose.yml
+      stop:
+        command: down
+        timeout: 0
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
+app:
+  config:
+    security:
+      token:
+        issuer: issuer
+        audience: audience
+        secret: secret
+        access-token-expiration: 30m
+        refresh-token-expiration: 1d
