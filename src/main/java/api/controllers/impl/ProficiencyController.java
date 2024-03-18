@@ -1,10 +1,15 @@
 package api.controllers.impl;
 
+<<<<<<< HEAD:src/main/java/api/controllers/impl/ProficiencyController.java
 import api.annotations.PageableAsQueryParam;
 import api.controllers.IController;
 import api.mappers.ProficiencyMapper;
 import api.models.dtos.ProficiencyDTO;
 import api.models.entities.Proficiency;
+=======
+import api.domains.Proficiency;
+import api.domains.dtos.ProficiencyDTO;
+>>>>>>> main:src/main/java/api/controllers/ProficiencyController.java
 import api.services.impl.ProficiencyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +34,11 @@ public class ProficiencyController implements IController<Proficiency, Proficien
     @GetMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns a proficiency by ID.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/ProficiencyController.java
     public Mono<Proficiency> findById(@PathVariable Integer id) {
+=======
+    public Mono<Proficiency> findById(@PathVariable Long id) {
+>>>>>>> main:src/main/java/api/controllers/ProficiencyController.java
         return proficiencyService.findById(id);
     }
 
@@ -53,24 +62,32 @@ public class ProficiencyController implements IController<Proficiency, Proficien
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Saves a proficiency in the database.")
     public Mono<Proficiency> save(@RequestBody @Valid ProficiencyDTO proficiencyDTO) {
-        Proficiency proficiency = ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO);
-        return proficiencyService.save(proficiency);
+        return proficiencyService.save(proficiencyDTO);
     }
 
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a proficiency in the database.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/ProficiencyController.java
     public Mono<Void> update(@PathVariable Integer id, @RequestBody @Valid ProficiencyDTO proficiencyDTO) {
         Proficiency proficiency = ProficiencyMapper.INSTANCE.toProficiency(proficiencyDTO);
         return proficiencyService.update(proficiency.withId(id));
+=======
+    public Mono<Void> update(@RequestBody @Valid ProficiencyDTO proficiencyDTO, @PathVariable Long id) {
+        return proficiencyService.update(proficiencyDTO, id);
+>>>>>>> main:src/main/java/api/controllers/ProficiencyController.java
     }
 
     @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletes a proficiency in the database.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/ProficiencyController.java
     public Mono<Void> delete(@PathVariable Integer id) {
+=======
+    public Mono<Void> delete(@PathVariable Long id) {
+>>>>>>> main:src/main/java/api/controllers/ProficiencyController.java
         return proficiencyService.delete(id);
     }
 

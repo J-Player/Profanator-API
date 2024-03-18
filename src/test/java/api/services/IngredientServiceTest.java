@@ -1,12 +1,18 @@
 package api.services;
 
+<<<<<<< HEAD
 import api.models.entities.Ingredient;
 import api.repositories.impl.IngredientRepository;
+=======
+import api.domains.Ingredient;
+import api.domains.dtos.IngredientDTO;
+import api.repositories.IngredientRepository;
+>>>>>>> main
 import api.services.cache.CacheService;
 import api.services.impl.IngredientService;
 import api.services.impl.ItemService;
-import api.util.IngredientCreator;
-import api.util.ItemCreator;
+import api.utils.IngredientCreator;
+import api.utils.ItemCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -20,13 +26,16 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+<<<<<<< HEAD
 import java.util.List;
 
+=======
+>>>>>>> main
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Ingredient Service Test")
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class IngredientServiceTest {
 
     @InjectMocks
@@ -41,11 +50,20 @@ class IngredientServiceTest {
     @Mock
     private CacheService cacheService;
 
+<<<<<<< HEAD
     private final Ingredient ingredient = IngredientCreator.ingredient().withId(1);
 
     @BeforeEach
     void setUp() {
         BDDMockito.when(ingredientRepository.findById(anyInt()))
+=======
+    private final Ingredient ingredient = IngredientCreator.ingredient();
+    private final IngredientDTO ingredientDTO = IngredientCreator.ingredientDTO();
+
+    @BeforeEach
+    void setUp() {
+        BDDMockito.when(ingredientRepository.findById(anyLong()))
+>>>>>>> main
                 .thenReturn(Mono.just(ingredient));
         BDDMockito.when(ingredientRepository.findByProductAndNameAllIgnoreCase(anyString(), anyString()))
                 .thenReturn(Mono.just(ingredient));
@@ -61,13 +79,21 @@ class IngredientServiceTest {
                 .thenReturn(Mono.empty());
         BDDMockito.when(itemService.findByName(anyString()))
                 .thenReturn(Mono.just(ItemCreator.item()));
+<<<<<<< HEAD
         BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any(Pageable.class));
+=======
+        BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any());
+>>>>>>> main
     }
 
     @Test
     @DisplayName("findById | Returns a mono of ingredient when successful")
     void findById() {
+<<<<<<< HEAD
         StepVerifier.create(ingredientService.findById(1))
+=======
+        StepVerifier.create(ingredientService.findById(1L))
+>>>>>>> main
                 .expectSubscription()
                 .expectNext(ingredient)
                 .verifyComplete();
@@ -76,9 +102,15 @@ class IngredientServiceTest {
     @Test
     @DisplayName("findById | Returns a mono error when ingredient does not exists")
     void findById_ReturnsMonoError_WhenEmptyMonoIsReturned() {
+<<<<<<< HEAD
         BDDMockito.when(ingredientRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(ingredientService.findById(1))
+=======
+        BDDMockito.when(ingredientRepository.findById(anyLong()))
+                .thenReturn(Mono.empty());
+        StepVerifier.create(ingredientService.findById(1L))
+>>>>>>> main
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -107,7 +139,7 @@ class IngredientServiceTest {
     @Test
     @DisplayName("save | Creates an ingredient when successful")
     void save() {
-        StepVerifier.create(ingredientService.save(ingredient))
+        StepVerifier.create(ingredientService.save(ingredientDTO))
                 .expectSubscription()
                 .expectNext(ingredient)
                 .verifyComplete();
@@ -116,7 +148,7 @@ class IngredientServiceTest {
     @Test
     @DisplayName("update | Save updated ingredient and returns empty mono when successful")
     void update() {
-        StepVerifier.create(ingredientService.update(ingredient))
+        StepVerifier.create(ingredientService.update(ingredientDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -124,9 +156,13 @@ class IngredientServiceTest {
     @Test
     @DisplayName("update | Returns mono error when ingredient does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
+<<<<<<< HEAD
         BDDMockito.when(ingredientRepository.findById(anyInt()))
+=======
+        BDDMockito.when(ingredientRepository.findById(anyLong()))
+>>>>>>> main
                 .thenReturn(Mono.empty());
-        StepVerifier.create(ingredientService.update(ingredient))
+        StepVerifier.create(ingredientService.update(ingredientDTO, 1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -135,7 +171,11 @@ class IngredientServiceTest {
     @Test
     @DisplayName("delete | Removes the ingredient when successful")
     void delete() {
+<<<<<<< HEAD
         StepVerifier.create(ingredientService.delete(1))
+=======
+        StepVerifier.create(ingredientService.delete(1L))
+>>>>>>> main
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -144,9 +184,15 @@ class IngredientServiceTest {
     @Test
     @DisplayName("delete | Returns Mono error when ingredient does not exists")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
+<<<<<<< HEAD
         BDDMockito.when(ingredientRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(ingredientService.delete(1))
+=======
+        BDDMockito.when(ingredientRepository.findById(anyLong()))
+                .thenReturn(Mono.empty());
+        StepVerifier.create(ingredientService.delete(1L))
+>>>>>>> main
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

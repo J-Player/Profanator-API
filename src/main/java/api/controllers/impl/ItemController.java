@@ -1,10 +1,15 @@
 package api.controllers.impl;
 
+<<<<<<< HEAD:src/main/java/api/controllers/impl/ItemController.java
 import api.annotations.PageableAsQueryParam;
 import api.controllers.IController;
 import api.mappers.ItemMapper;
 import api.models.dtos.ItemDTO;
 import api.models.entities.Item;
+=======
+import api.domains.Item;
+import api.domains.dtos.ItemDTO;
+>>>>>>> main:src/main/java/api/controllers/ItemController.java
 import api.services.impl.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +34,11 @@ public class ItemController implements IController<Item, ItemDTO> {
     @GetMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns a item by ID.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/ItemController.java
     public Mono<Item> findById(@PathVariable Integer id) {
+=======
+    public Mono<Item> findById(@PathVariable Long id) {
+>>>>>>> main:src/main/java/api/controllers/ItemController.java
         return itemService.findById(id);
     }
 
@@ -54,24 +63,32 @@ public class ItemController implements IController<Item, ItemDTO> {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Saves a item in the database.")
     public Mono<Item> save(@RequestBody @Valid ItemDTO itemDTO) {
-        Item item = ItemMapper.INSTANCE.toItem(itemDTO);
-        return itemService.save(item);
+        return itemService.save(itemDTO);
     }
 
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a item in the database.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/ItemController.java
     public Mono<Void> update(@PathVariable Integer id, @RequestBody @Valid ItemDTO itemDTO) {
         Item item = ItemMapper.INSTANCE.toItem(itemDTO);
         return itemService.update(item.withId(id));
+=======
+    public Mono<Void> update(@RequestBody @Valid ItemDTO itemDTO, @PathVariable Long id) {
+        return itemService.update(itemDTO, id);
+>>>>>>> main:src/main/java/api/controllers/ItemController.java
     }
 
     @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletes a item in the database.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/ItemController.java
     public Mono<Void> delete(@PathVariable Integer id) {
+=======
+    public Mono<Void> delete(@PathVariable Long id) {
+>>>>>>> main:src/main/java/api/controllers/ItemController.java
         return itemService.delete(id);
     }
 

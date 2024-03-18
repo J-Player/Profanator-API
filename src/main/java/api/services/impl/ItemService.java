@@ -1,9 +1,16 @@
 package api.services.impl;
 
+<<<<<<< HEAD
 import api.models.entities.Item;
 import api.repositories.impl.ItemRepository;
+=======
+import api.domains.Item;
+import api.domains.dtos.ItemDTO;
+import api.repositories.ItemRepository;
+>>>>>>> main
 import api.services.IService;
 import api.services.cache.CacheService;
+import api.utils.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -27,7 +34,7 @@ import static api.configs.cache.CacheConfig.TTL;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = ITEM_CACHE_NAME)
-public class ItemService implements IService<Item> {
+public class ItemService implements IService<Item, ItemDTO> {
 
     private final ItemRepository itemRepository;
     private final ProficiencyService proficiencyService;
@@ -35,9 +42,13 @@ public class ItemService implements IService<Item> {
 
     @Override
     @Cacheable
+<<<<<<< HEAD
     public Mono<Item> findById(Integer id) {
+=======
+    public Mono<Item> findById(Long id) {
+>>>>>>> main
         return itemRepository.findById(id)
-                .switchIfEmpty(monoResponseStatusNotFoundException(null))
+                .switchIfEmpty(monoResponseStatusNotFoundException())
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao recuperar o item (id = {}): {}", id, ex.getMessage());
                     return Mono.error(ex);
@@ -48,7 +59,7 @@ public class ItemService implements IService<Item> {
     @Cacheable
     public Mono<Item> findByName(String name) {
         return itemRepository.findByNameIgnoreCase(name)
-                .switchIfEmpty(monoResponseStatusNotFoundException(name))
+                .switchIfEmpty(monoResponseStatusNotFoundException())
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao recuperar o item (name = {}): {}", name, ex.getMessage());
                     return Mono.error(ex);
@@ -66,17 +77,27 @@ public class ItemService implements IService<Item> {
 
     public Mono<Page<Item>> findAllByProficiency(String proficiency, Pageable pageable) {
         return proficiencyService.findByName(proficiency)
+<<<<<<< HEAD
                 .flatMapMany(p -> itemRepository.findAllByProficiencyIgnoreCase(p.getName(), pageable))
                 .collectList()
                 .zipWith(itemRepository.count())
                 .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
+=======
+                .flatMapMany(p -> itemRepository.findAllByProficiencyIgnoreCase(p.getName(), Sort.by("id")))
+                .onErrorResume(ex -> {
+                    log.error("Ocorreu um erro ao recuperar os Items da proficiency {}: {}", proficiency, ex.getMessage());
+                    cacheService.evictCache(ITEM_CACHE_NAME, "findAllByProficiency", proficiency);
+                    return Flux.error(ex);
+                })
+                .cache(TTL);
+>>>>>>> main
     }
 
     @Override
     @Transactional
     @CacheEvict(allEntries = true)
-    public Mono<Item> save(Item item) {
-        return itemRepository.save(item)
+    public Mono<Item> save(ItemDTO itemDTO) {
+        return itemRepository.save(MapperUtil.MAPPER.map(itemDTO, Item.class))
                 .doOnNext(i -> log.info("Item salvo com sucesso! ({}).", i))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao salvar o item: {}", ex.getMessage());
@@ -85,26 +106,27 @@ public class ItemService implements IService<Item> {
     }
 
     @Override
+    @Transactional
     @CacheEvict(allEntries = true)
-    public Mono<Void> update(Item item) {
-        return findById(item.getId())
-                .doOnNext(oldItem -> {
-                    item.setCreatedAt(oldItem.getCreatedAt());
-                    item.setUpdatedAt(oldItem.getUpdatedAt());
-                    item.setVersion(oldItem.getVersion());
-                })
-                .flatMap(itemRepository::save)
-                .doOnNext(i -> log.info("Item atualizado com sucesso! {}", i))
-                .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao atualizar o item (id: {}): {}", item.getId(), ex.getMessage());
-                    return Mono.error(ex);
-                })
+    public Mono<Void> update(ItemDTO itemDTO, Long id) {
+        return findById(id)
+                .doOnNext(item -> MapperUtil.MAPPER.map(itemDTO, item))
+                .flatMap(item -> itemRepository.save(item)
+                        .doOnSuccess(i -> log.info("Item atualizado com sucesso! {}", i))
+                        .onErrorResume(ex -> {
+                            log.error("Ocorreu um erro durante a atualização de item: {}", ex.getMessage());
+                            return Mono.error(ex);
+                        }))
                 .then();
     }
 
     @Override
     @CacheEvict(allEntries = true)
+<<<<<<< HEAD
     public Mono<Void> delete(Integer id) {
+=======
+    public Mono<Void> delete(Long id) {
+>>>>>>> main
         return findById(id)
                 .flatMap(item -> itemRepository.delete(item).thenReturn(item))
                 .doOnSuccess(item -> log.info("Item excluído com sucesso! ({})", item))
@@ -115,6 +137,7 @@ public class ItemService implements IService<Item> {
                 .then();
     }
 
+<<<<<<< HEAD
     public Mono<Void> deleteAll() {
         return itemRepository.deleteAll();
     }
@@ -122,6 +145,10 @@ public class ItemService implements IService<Item> {
     private <T> Mono<T> monoResponseStatusNotFoundException(String item) {
         String message = item != null && item.length() > 0 ? String.format("Item '%s' not found", item) : "Item not found";
         return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, message));
+=======
+    private <T> Mono<T> monoResponseStatusNotFoundException() {
+        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
+>>>>>>> main
     }
 
 }

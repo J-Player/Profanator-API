@@ -1,10 +1,16 @@
 package api.services;
 
+<<<<<<< HEAD
 import api.models.entities.Proficiency;
 import api.repositories.impl.ProficiencyRepository;
+=======
+import api.domains.Proficiency;
+import api.domains.dtos.ProficiencyDTO;
+import api.repositories.ProficiencyRepository;
+>>>>>>> main
 import api.services.cache.CacheService;
 import api.services.impl.ProficiencyService;
-import api.util.ProficiencyCreator;
+import api.utils.ProficiencyCreator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -18,13 +24,16 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+<<<<<<< HEAD
 import java.util.List;
 
+=======
+>>>>>>> main
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Proficiency Service Test")
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class ProficiencyServiceTest {
 
     @InjectMocks
@@ -36,13 +45,22 @@ class ProficiencyServiceTest {
     @Mock
     private CacheService cacheService;
 
+<<<<<<< HEAD
     private final Proficiency proficiency = ProficiencyCreator.proficiency().withId(1);
+=======
+    private final ProficiencyDTO proficiencyDTO = ProficiencyCreator.proficiencyDTO();
+    private final Proficiency proficiency = ProficiencyCreator.proficiency();
+>>>>>>> main
 
     @BeforeEach
     void setUp() {
         BDDMockito.when(proficiencyRepository.findByNameIgnoreCase(anyString()))
                 .thenReturn(Mono.just(proficiency));
+<<<<<<< HEAD
         BDDMockito.when(proficiencyRepository.findById(anyInt()))
+=======
+        BDDMockito.when(proficiencyRepository.findById(anyLong()))
+>>>>>>> main
                 .thenReturn(Mono.just(proficiency));
         BDDMockito.when(proficiencyRepository.findAllBy(any(Pageable.class)))
                 .thenReturn(Flux.just(proficiency));
@@ -50,10 +68,6 @@ class ProficiencyServiceTest {
                 .thenReturn(Mono.just(1L));
         BDDMockito.when(proficiencyRepository.save(any(Proficiency.class)))
                 .thenReturn(Mono.just(proficiency));
-        BDDMockito.when(proficiencyRepository.save(proficiency))
-                .thenReturn(Mono.empty());
-        BDDMockito.when(proficiencyRepository.delete(any(Proficiency.class)))
-                .thenReturn(Mono.empty());
         BDDMockito.when(proficiencyRepository.delete(any(Proficiency.class)))
                 .thenReturn(Mono.empty());
         BDDMockito.doNothing().when(cacheService).evictCache(anyString(), anyString(), any(Pageable.class));
@@ -62,7 +76,11 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("findById | Returns a mono of proficiency")
     void findById_ReturnMonoProficiency_WhenSuccessful() {
+<<<<<<< HEAD
         StepVerifier.create(proficiencyService.findById(1))
+=======
+        StepVerifier.create(proficiencyService.findById(1L))
+>>>>>>> main
                 .expectSubscription()
                 .expectNext(proficiency)
                 .verifyComplete();
@@ -71,9 +89,15 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("findById | Returns mono error when proficiency does not exists")
     void findById_ReturnMonoError_WhenEmptyMonoIsReturned() {
+<<<<<<< HEAD
         BDDMockito.when(proficiencyRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(proficiencyService.findById(1))
+=======
+        BDDMockito.when(proficiencyRepository.findById(anyLong()))
+                .thenReturn(Mono.empty());
+        StepVerifier.create(proficiencyService.findById(1L))
+>>>>>>> main
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -113,7 +137,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("save | Create a proficiency in database")
     void save() {
-        StepVerifier.create(proficiencyService.save(proficiency.withId(null)))
+        StepVerifier.create(proficiencyService.save(proficiencyDTO))
                 .expectSubscription()
                 .expectNext(proficiency)
                 .verifyComplete();
@@ -122,7 +146,7 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("update | Save updated proficiency and returns empty mono when successful")
     void update() {
-        StepVerifier.create(proficiencyService.update(proficiency))
+        StepVerifier.create(proficiencyService.update(proficiencyDTO, 1L))
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -130,9 +154,13 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("update | Returns mono error when proficiency does not exists")
     void update_ReturnsMonoError_WhenEmptyMonoIsReturned() {
+<<<<<<< HEAD
         BDDMockito.when(proficiencyRepository.findById(anyInt()))
+=======
+        BDDMockito.when(proficiencyRepository.findById(anyLong()))
+>>>>>>> main
                 .thenReturn(Mono.empty());
-        StepVerifier.create(proficiencyService.update(proficiency))
+        StepVerifier.create(proficiencyService.update(proficiencyDTO, 1L))
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();
@@ -141,7 +169,11 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("delete | Removes the proficiency when successful")
     void delete() {
+<<<<<<< HEAD
         StepVerifier.create(proficiencyService.delete(1))
+=======
+        StepVerifier.create(proficiencyService.delete(1L))
+>>>>>>> main
                 .expectSubscription()
                 .verifyComplete();
     }
@@ -149,9 +181,15 @@ class ProficiencyServiceTest {
     @Test
     @DisplayName("delete | Returns mono error when proficiency does not exist")
     void delete_ReturnsMonoError_WhenEmptyMonoIsReturned() {
+<<<<<<< HEAD
         BDDMockito.when(proficiencyRepository.findById(anyInt()))
                 .thenReturn(Mono.empty());
         StepVerifier.create(proficiencyService.delete(1))
+=======
+        BDDMockito.when(proficiencyRepository.findById(anyLong()))
+                .thenReturn(Mono.empty());
+        StepVerifier.create(proficiencyService.delete(1L))
+>>>>>>> main
                 .expectSubscription()
                 .expectError(ResponseStatusException.class)
                 .verify();

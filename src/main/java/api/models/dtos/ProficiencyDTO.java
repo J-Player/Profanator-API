@@ -1,6 +1,10 @@
 package api.models.dtos;
 
+<<<<<<< HEAD:src/main/java/api/models/dtos/ProficiencyDTO.java
 import jakarta.validation.constraints.NotEmpty;
+=======
+import jakarta.validation.constraints.NotBlank;
+>>>>>>> main:src/main/java/api/domains/dtos/ProficiencyDTO.java
 import lombok.*;
 
 @Data
@@ -10,7 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 public class ProficiencyDTO {
 
-    @NotEmpty(message = "The 'name' cannot be empty or null")
+    @NotBlank(message = "The 'name' cannot be empty or null")
     private String name;
 
 }

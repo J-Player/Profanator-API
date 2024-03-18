@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+<<<<<<< HEAD
     id 'org.springframework.boot' version '3.1.6'
     id 'io.spring.dependency-management' version '1.1.4'
 }
@@ -10,6 +11,15 @@ java {
     sourceCompatibility = 17
     targetCompatibility = 17
 }
+=======
+    id 'org.springframework.boot' version '3.1.1'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'api'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+>>>>>>> main
 
 repositories {
     mavenCentral()
@@ -22,6 +32,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security' //SPRING SECURITY
     implementation 'org.springframework.boot:spring-boot-starter-actuator' //SPRING ACTUATOR
     developmentOnly 'org.springframework.boot:spring-boot-devtools' //SPRING DEV-TOOLS
+<<<<<<< HEAD
     runtimeOnly 'org.postgresql:r2dbc-postgresql' //R2DBC POSTGRESQL DRIVER
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose' //SPRING DOCKER COMPOSE
     implementation 'com.auth0:java-jwt:4.4.0' //JWT AUTH0
@@ -30,11 +41,22 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok' //LOMBOK
     implementation 'org.mapstruct:mapstruct:1.5.5.Final' //MAPSTRUCT
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final' //MAPSTRUCT
+=======
+    runtimeOnly 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE' //R2DBC POSTGRESQL DRIVER
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4' //SPRINGDOC OPENAPI WEBFLUX
+    compileOnly 'org.projectlombok:lombok' //LOMBOK
+    annotationProcessor 'org.projectlombok:lombok' //LOMBOK
+    implementation 'org.modelmapper:modelmapper:3.1.1' //MODELMAPPER
+>>>>>>> main
     testImplementation 'org.springframework.boot:spring-boot-starter-test' //SPRING TEST
     testImplementation 'org.springframework.security:spring-security-test' //SPRING SECURITY TEST
     testImplementation 'org.testcontainers:r2dbc' //TESTCONTAINERS R2DBC
     testImplementation 'org.testcontainers:postgresql' //TESTCONTAINERS POSTGRESQL
     testImplementation 'io.projectreactor:reactor-test' //REACTOR TEST
+<<<<<<< HEAD
+=======
+    testRuntimeOnly 'io.r2dbc:r2dbc-h2'
+>>>>>>> main
 }
 
 bootBuildImage {

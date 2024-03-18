@@ -1,10 +1,15 @@
 package api.controllers.impl;
 
+<<<<<<< HEAD:src/main/java/api/controllers/impl/IngredientController.java
 import api.annotations.PageableAsQueryParam;
 import api.controllers.IController;
 import api.mappers.IngredientMapper;
 import api.models.dtos.IngredientDTO;
 import api.models.entities.Ingredient;
+=======
+import api.domains.Ingredient;
+import api.domains.dtos.IngredientDTO;
+>>>>>>> main:src/main/java/api/controllers/IngredientController.java
 import api.services.impl.IngredientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +34,11 @@ public class IngredientController implements IController<Ingredient, IngredientD
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns a ingredient by id.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/IngredientController.java
     public Mono<Ingredient> findById(@PathVariable Integer id) {
+=======
+    public Mono<Ingredient> findById(@PathVariable Long id) {
+>>>>>>> main:src/main/java/api/controllers/IngredientController.java
         return ingredientService.findById(id);
     }
 
@@ -46,24 +55,32 @@ public class IngredientController implements IController<Ingredient, IngredientD
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Saves a ingredient in the database.")
     public Mono<Ingredient> save(@RequestBody @Valid IngredientDTO ingredientDTO) {
-        Ingredient ingredient = IngredientMapper.INSTANCE.toIngredient(ingredientDTO);
-        return ingredientService.save(ingredient);
+        return ingredientService.save(ingredientDTO);
     }
 
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Updates a ingredient in the database.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/IngredientController.java
     public Mono<Void> update(@PathVariable Integer id, @RequestBody @Valid IngredientDTO ingredientDTO) {
         Ingredient ingredient = IngredientMapper.INSTANCE.toIngredient(ingredientDTO);
         return ingredientService.update(ingredient.withId(id));
+=======
+    public Mono<Void> update(@RequestBody @Valid IngredientDTO ingredientDTO, @PathVariable Long id) {
+        return ingredientService.update(ingredientDTO, id);
+>>>>>>> main:src/main/java/api/controllers/IngredientController.java
     }
 
     @Override
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletes a ingredient in the database.")
+<<<<<<< HEAD:src/main/java/api/controllers/impl/IngredientController.java
     public Mono<Void> delete(@PathVariable Integer id) {
+=======
+    public Mono<Void> delete(@PathVariable Long id) {
+>>>>>>> main:src/main/java/api/controllers/IngredientController.java
         return ingredientService.delete(id);
     }
 

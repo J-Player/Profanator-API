@@ -30,12 +30,46 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
+<<<<<<< HEAD
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity, SecurityFilter securityFilter) {
         final String ADMIN = UserRole.ADMIN.name();
         final String[] whitelist = {
                 "/proficiencies/**",
                 "/items/**",
                 "/ingredients/**",
+=======
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
+        final String ADMIN = "ADMIN";
+        //@formatter:off
+        return httpSecurity
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(c -> c
+                    .pathMatchers(HttpMethod.GET,
+                            "/proficiencies/**",
+                            "/items/**", "/ingredients/**").authenticated()
+                    .pathMatchers("/users/**").hasRole(ADMIN)
+                    .pathMatchers(HttpMethod.POST).hasRole(ADMIN)
+                    .pathMatchers(HttpMethod.PUT).hasRole(ADMIN)
+                    .pathMatchers(HttpMethod.DELETE).hasRole(ADMIN)
+                    .pathMatchers("/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/webjars/**").authenticated())
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .build();
+        //@formatter:on
+    }
+
+    private ServerAuthenticationSuccessHandler authenticationSuccessHandler() {
+        final String location = "swagger-ui.html";
+        return (webFilterExchange, authentication) -> {
+            ServerWebExchange exchange = webFilterExchange.getExchange();
+            ServerRequestCache requestCache = new WebSessionServerRequestCache();
+            ServerRedirectStrategy redirectStrategy = new DefaultServerRedirectStrategy();
+            return requestCache.getRedirectUri(exchange).defaultIfEmpty(URI.create(location))
+                    .flatMap(uri -> redirectStrategy.sendRedirect(exchange, uri));
+>>>>>>> main
         };
         final String[] swagger = {"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"};
         return httpSecurity

@@ -1,9 +1,16 @@
 package api.services.impl;
 
+<<<<<<< HEAD
 import api.models.entities.Ingredient;
 import api.repositories.impl.IngredientRepository;
+=======
+import api.domains.Ingredient;
+import api.domains.dtos.IngredientDTO;
+import api.repositories.IngredientRepository;
+>>>>>>> main
 import api.services.IService;
 import api.services.cache.CacheService;
+import api.utils.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -27,14 +34,18 @@ import static api.configs.cache.CacheConfig.TTL;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = INGREDIENT_CACHE_NAME)
-public class IngredientService implements IService<Ingredient> {
+public class IngredientService implements IService<Ingredient, IngredientDTO> {
 
     private final IngredientRepository ingredientRepository;
     private final CacheService cacheService;
 
     @Override
     @Cacheable
+<<<<<<< HEAD
     public Mono<Ingredient> findById(Integer id) {
+=======
+    public Mono<Ingredient> findById(Long id) {
+>>>>>>> main
         return ingredientRepository.findById(id)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found")))
                 .onErrorResume(ex -> {
@@ -54,18 +65,29 @@ public class IngredientService implements IService<Ingredient> {
     }
 
     @Cacheable
+<<<<<<< HEAD
     public Mono<Page<Ingredient>> findAllByProduct(String product, Pageable pageable) {
         return ingredientRepository.findAllByProductIgnoreCase(product, pageable)
                 .collectList()
                 .zipWith(ingredientRepository.count())
                 .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
+=======
+    public Flux<Ingredient> findAllByProduct(String product) {
+        return ingredientRepository.findByProductIgnoreCase(product, Sort.by("product", "name"))
+                .onErrorResume(ex -> {
+                    log.error("Ocorreu um erro ao recuperar os Ingredients do item {}: {}", product, ex.getMessage());
+                    cacheService.evictCache(INGREDIENT_CACHE_NAME, "findAllByProduct", product);
+                    return Mono.error(ex);
+                })
+                .cache(TTL);
+>>>>>>> main
     }
 
     @Override
     @Transactional
     @CacheEvict(allEntries = true)
-    public Mono<Ingredient> save(Ingredient ingredient) {
-        return ingredientRepository.save(ingredient)
+    public Mono<Ingredient> save(IngredientDTO ingredientDTO) {
+        return ingredientRepository.save(MapperUtil.MAPPER.map(ingredientDTO, Ingredient.class))
                 .doOnSuccess(i -> log.info("Ingredient salvo com sucesso! ({}).", i))
                 .onErrorResume(ex -> {
                     log.error("Ocorreu um erro ao salvar o Ingredient: {}", ex.getMessage());
@@ -74,26 +96,27 @@ public class IngredientService implements IService<Ingredient> {
     }
 
     @Override
+    @Transactional
     @CacheEvict(allEntries = true)
-    public Mono<Void> update(Ingredient ingredient) {
-        return findById(ingredient.getId())
-                .doOnNext(oldIngredient -> {
-                    ingredient.setCreatedAt(oldIngredient.getCreatedAt());
-                    ingredient.setUpdatedAt(oldIngredient.getUpdatedAt());
-                    ingredient.setVersion(oldIngredient.getVersion());
-                })
-                .flatMap(ingredientRepository::save)
-                .doOnSuccess(i -> log.info("Ingredient atualizado com sucesso! {}", i))
-                .onErrorResume(ex -> {
-                    log.error("Ocorreu um erro ao atualizar o Ingredient (id: {}): {}", ingredient.getId(), ex.getMessage());
-                    return Mono.error(ex);
-                })
+    public Mono<Void> update(IngredientDTO ingredientDTO, Long id) {
+        return findById(id)
+                .doOnNext(ingredient -> MapperUtil.MAPPER.map(ingredientDTO, ingredient))
+                .flatMap(ingredient -> ingredientRepository.save(ingredient)
+                        .doOnSuccess(i -> log.info("Ingredient atualizado com sucesso! {}", i))
+                        .onErrorResume(ex -> {
+                            log.error("Ocorreu um erro ao atualizar o Ingredient (id: {}): {}", ingredient.getId(), ex.getMessage());
+                            return Mono.error(ex);
+                        }))
                 .then();
     }
 
     @Override
     @CacheEvict(allEntries = true)
+<<<<<<< HEAD
     public Mono<Void> delete(Integer id) {
+=======
+    public Mono<Void> delete(Long id) {
+>>>>>>> main
         return findById(id)
                 .flatMap(ingredient -> ingredientRepository.delete(ingredient).thenReturn(ingredient))
                 .doOnSuccess(ingredient -> log.info("Ingredient excluído com sucesso! ({})", ingredient))
@@ -104,8 +127,13 @@ public class IngredientService implements IService<Ingredient> {
                 .then();
     }
 
+<<<<<<< HEAD
     public Mono<Void> deleteAll() {
         return ingredientRepository.deleteAll();
+=======
+    private <T> Mono<T> monoResponseStatusNotFoundException() {
+        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found"));
+>>>>>>> main
     }
 
 }

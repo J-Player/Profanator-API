@@ -6,10 +6,16 @@ import api.models.enums.UserRole;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.v3.oas.annotations.Hidden;
+<<<<<<< HEAD:src/main/java/api/models/entities/User.java
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+=======
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+import org.springframework.context.annotation.Profile;
+>>>>>>> main:src/main/java/api/domains/User.java
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Column;
@@ -18,16 +24,22 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+<<<<<<< HEAD:src/main/java/api/models/entities/User.java
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static api.models.enums.UserRole.ADMIN;
 import static api.models.enums.UserRole.USER;
+=======
+import java.util.Arrays;
+import java.util.Collection;
+>>>>>>> main:src/main/java/api/domains/User.java
 
 @Data
 @With
 @Builder
+<<<<<<< HEAD:src/main/java/api/models/entities/User.java
 @Table("Users")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,6 +58,28 @@ public class User implements UserDetails {
     @NotNull(message = "The 'role' cannot be empty or null")
     @Column("role")
     private UserRole role = USER;
+=======
+@NoArgsConstructor
+@AllArgsConstructor
+@Profile("prod")
+@Table("Profanator_User")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class User implements UserDetails {
+
+    @Id
+    @EqualsAndHashCode.Include
+    private Long id;
+
+    @NotBlank(message = "The 'username' cannot be empty or null")
+    @EqualsAndHashCode.Include
+    private String username;
+
+    @NotBlank(message = "The 'password' cannot be empty or null")
+    private String password;
+
+    @NotBlank(message = "The 'authorities' cannot be empty or null")
+    private String authorities;
+>>>>>>> main:src/main/java/api/domains/User.java
 
     @Builder.Default
     @Column("accountNonLocked")

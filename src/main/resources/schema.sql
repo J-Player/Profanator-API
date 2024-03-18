@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS Proficiencies(
 	id SERIAL,
 	name VARCHAR(255) UNIQUE,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	updated_at TIMESTAMPTZ,
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMP WITH TIME ZONE,
 	version INTEGER,
 	PRIMARY KEY (id)
 );
@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS Items(
 	proficiency VARCHAR(255),
 	name VARCHAR(255) NOT NULL UNIQUE,
 	qtbyproduction INTEGER NOT NULL CHECK (qtbyproduction > 0),
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	updated_at TIMESTAMPTZ,
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMP WITH TIME ZONE,
 	version INTEGER,
 	PRIMARY KEY (id),
 	FOREIGN KEY (proficiency) REFERENCES Proficiencies(name) ON UPDATE CASCADE
@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS Ingredients(
 	product VARCHAR(255) NOT NULL,
 	name VARCHAR(255) NOT NULL,
 	quantity INTEGER NOT NULL CHECK (quantity > 0),
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	updated_at TIMESTAMPTZ,
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMP WITH TIME ZONE,
 	version INTEGER,
 	PRIMARY KEY (id),
 	FOREIGN KEY (product) REFERENCES Items(name) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -33,7 +33,11 @@ CREATE TABLE IF NOT EXISTS Ingredients(
 	UNIQUE (product, name)
 );
 
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS Users(
+=======
+CREATE TABLE IF NOT EXISTS Profanator_User(
+>>>>>>> main
     id SERIAL,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
