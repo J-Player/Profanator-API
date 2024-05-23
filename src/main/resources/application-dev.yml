@@ -1,8 +1,4 @@
 spring:
-  r2dbc:
-    url: admin
-    username: admin
-    password: admin
   docker:
     compose:
       profiles:
