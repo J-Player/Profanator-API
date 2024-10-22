@@ -1,12 +1,8 @@
 spring:
-  docker:
-    compose:
-      profiles:
-        active: dev
-      file: docker-compose.yml
-      stop:
-        command: down
-        timeout: 0
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
 management:
   endpoints:
     web:
@@ -15,7 +11,7 @@ management:
   endpoint:
     shutdown:
       enabled: true
-app:
+api:
   config:
     security:
       token:

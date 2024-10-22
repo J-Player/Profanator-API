@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.ReactivePageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.ReactiveSortHandlerMethodArgumentResolver;
+import org.springframework.lang.NonNull;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
@@ -32,7 +33,7 @@ public class WebFluxConfig implements WebFluxConfigurer {
     }
 
     @Override
-    public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
+    public void configureArgumentResolvers(@NonNull ArgumentResolverConfigurer configurer) {
         ReactiveSortHandlerMethodArgumentResolver sortHandlerMethodArgumentResolver = new ReactiveSortHandlerMethodArgumentResolver();
         sortHandlerMethodArgumentResolver.setSortParameter(SORT_PARAM_NAME);
         sortHandlerMethodArgumentResolver.setFallbackSort(defaultSort());

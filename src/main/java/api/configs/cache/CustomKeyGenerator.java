@@ -1,17 +1,18 @@
 package api.configs.cache;
 
-import org.springframework.cache.interceptor.SimpleKeyGenerator;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import java.lang.reflect.Method;
 import java.util.Locale;
+
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class CustomKeyGenerator extends SimpleKeyGenerator {
 
     @Override
-    public Object generate(Object target, Method method, Object... params) {
+    public @NonNull Object generate(@NonNull Object target,@NonNull  Method method,@NonNull  Object... params) {
         return generateCustomKey(target.getClass().getSimpleName(), method.getName(), params);
     }
 

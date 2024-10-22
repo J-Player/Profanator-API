@@ -1,15 +1,9 @@
 package api.services.impl;
 
-import api.exceptions.CookieNotFoundException;
-import api.exceptions.InvalidTokenException;
-import api.mappers.UserMapper;
-import api.models.entities.User;
-import api.models.security.AuthenticationRequest;
-import api.models.security.AuthenticationResponse;
-import api.models.security.RegisterRequest;
-import api.services.security.TokenService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static api.models.enums.TokenType.REFRESH_TOKEN;
+
+import java.util.Collection;
+
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -22,13 +16,19 @@ import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
+
+import api.exceptions.CookieNotFoundException;
+import api.exceptions.InvalidTokenException;
+import api.mappers.UserMapper;
+import api.models.entities.User;
+import api.models.security.AuthenticationRequest;
+import api.models.security.AuthenticationResponse;
+import api.models.security.RegisterRequest;
+import api.services.security.TokenService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
-
-import static api.models.enums.TokenType.REFRESH_TOKEN;
 
 @Slf4j
 @Service
@@ -68,9 +68,9 @@ public class AuthenticationService {
     public Mono<Void> logout(ServerHttpRequest request, ServerHttpResponse response) {
         return Mono.just(request)
                 .map(ServerHttpRequest::getCookies)
-                .map(MultiValueMap::toSingleValueMap)
-                .map(Map::values)
-                .flatMapMany(Flux::fromIterable)
+                .flatMapMany(cookies -> Flux.fromIterable(cookies.values().stream()
+                        .flatMap(Collection::stream)
+                        .toList()))
                 .doOnNext(cookie -> response.addCookie(ResponseCookie
                         .from(cookie.getName())
                         .path("/")

@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Data
 @Component
-@ConfigurationProperties("app.config.security")
+@ConfigurationProperties("api.config.security")
 public class SecurityProperties {
 
     private Map<String, String> token = new HashMap<>();

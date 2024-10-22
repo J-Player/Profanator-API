@@ -1,11 +1,10 @@
 package api.services.impl;
 
-import api.models.entities.Ingredient;
-import api.repositories.impl.IngredientRepository;
-import api.services.IService;
-import api.services.cache.CacheService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static api.configs.cache.CacheConfig.INGREDIENT_CACHE_NAME;
+import static api.configs.cache.CacheConfig.TTL;
+
+import java.time.Duration;
+
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,12 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import api.models.entities.Ingredient;
+import api.repositories.impl.IngredientRepository;
+import api.services.IService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
-
-import static api.configs.cache.CacheConfig.INGREDIENT_CACHE_NAME;
-import static api.configs.cache.CacheConfig.TTL;
 
 @Slf4j
 @Service
@@ -30,7 +30,6 @@ import static api.configs.cache.CacheConfig.TTL;
 public class IngredientService implements IService<Ingredient> {
 
     private final IngredientRepository ingredientRepository;
-    private final CacheService cacheService;
 
     @Override
     @Cacheable

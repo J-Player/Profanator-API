@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   db:
     container_name: db
@@ -14,5 +13,17 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
       - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/2_data.sql
+  api:
+    container_name: profanator
+    build: .
+    restart: always
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgres://db:5432/postgres
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
 volumes:
   pgdata:

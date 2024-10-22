@@ -41,12 +41,21 @@ public class TradeController implements IController<Trade, TradeDTO> {
     @PageableAsQueryParam
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Returns a list of trades.")
-    public Mono<Page<Trade>> findAllByItem(@RequestParam String item,
-                                           @RequestParam(required = false) String seller,
-                                           @RequestParam(required = false) Integer minPrice,
-                                           @RequestParam(required = false) Integer maxPrice,
-                                           @Parameter(hidden = true) Pageable pageable) {
+    public Mono<Page<Trade>> findAll(@RequestParam String item,
+                                     @RequestParam(required = false) String seller,
+                                     @RequestParam(required = false, name = "min_price") Integer minPrice,
+                                     @RequestParam(required = false, name = "max_price") Integer maxPrice,
+                                     @Parameter(hidden = true) Pageable pageable) {
         return tradeService.findAll(item, seller, minPrice, maxPrice, pageable);
+    }
+
+    @GetMapping("/{seller}/all")
+    @PageableAsQueryParam
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Return a list of trades from a seller.")
+    public Mono<Page<Trade>> findAllBySeller(@PathVariable String seller,
+                                             @Parameter(hidden = true) Pageable pageable) {
+        return tradeService.findAllBySeller(seller, pageable);
     }
 
     @Override
@@ -78,7 +87,8 @@ public class TradeController implements IController<Trade, TradeDTO> {
         return tradeService.delete(id);
     }
 
-    private Mono<Boolean> isOwner(Integer tradeId, Integer userId) { //NOSONAR
+    @SuppressWarnings("unused")
+    private Mono<Boolean> isOwner(Integer tradeId, Integer userId) {
         return tradeService.findById(tradeId)
                 .log()
                 .map(Trade::getSeller)

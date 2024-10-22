@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 public class TradeService implements IService<Trade> {
 
     private final TradeRepository tradeRepository;
+    private final UserService userService;
 
     @Override
     public Mono<Trade> findById(Integer id) {
@@ -40,10 +41,11 @@ public class TradeService implements IService<Trade> {
     }
 
     public Mono<Page<Trade>> findAllBySeller(String seller, Pageable pageable) {
-        return tradeRepository.findAllBySeller(seller)
-                .collectList()
-                .zipWith(tradeRepository.count())
-                .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
+        return userService.findByName(seller)
+                .then(tradeRepository.findAllBySellerIgnoreCase(seller, pageable)
+                        .collectList()
+                        .zipWith(tradeRepository.count())
+                        .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2())));
     }
 
     public Mono<Page<Trade>> findAll(String item, String seller, Integer minPrice, Integer maxPrice, Pageable pageable) {
@@ -53,38 +55,33 @@ public class TradeService implements IService<Trade> {
                 .zipWith(tradeRepository.count())
                 .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
         if (isAllNonNull.test(new Object[]{seller, minPrice, maxPrice})) {
-            return fluxMonoFunction.apply(
-                    //item + seller + minprice + maxprice
-                    tradeRepository.
-                            findAllByItemIgnoreCaseAndSellerIgnoreCaseAndPriceBetween(item, seller, minPrice, maxPrice, pageable));
+            return userService.findByName(seller)
+                    .then(fluxMonoFunction.apply(
+                            tradeRepository
+                                    .findAllByItemIgnoreCaseAndSellerIgnoreCaseAndPriceBetween(item, seller, minPrice, maxPrice, pageable)));
         } else if (seller != null && (minPrice != null ^ maxPrice != null)) {
-            return fluxMonoFunction.apply(minPrice != null ?
-                    //item + seller + minprice
-                    tradeRepository
-                            .findAllByItemIgnoreCaseAndSellerIgnoreCaseAndPriceGreaterThanEqual(item, seller, minPrice, pageable) :
-                    //item + seller + maxprice
-                    tradeRepository
-                            .findAllByItemIgnoreCaseAndSellerIgnoreCaseAndPriceLessThanEqual(item, seller, maxPrice, pageable));
+            return userService.findByName(seller)
+                    .then(fluxMonoFunction.apply(minPrice != null ?
+                            tradeRepository
+                                    .findAllByItemIgnoreCaseAndSellerIgnoreCaseAndPriceGreaterThanEqual(item, seller, minPrice, pageable) :
+                            tradeRepository
+                                    .findAllByItemIgnoreCaseAndSellerIgnoreCaseAndPriceLessThanEqual(item, seller, maxPrice, pageable)));
         } else if (seller != null) {
-            //item + seller
-            return fluxMonoFunction.apply(
-                    tradeRepository
-                            .findAllByItemIgnoreCaseAndSellerIgnoreCase(item, seller, pageable));
+            return userService.findByName(seller)
+                    .then(fluxMonoFunction.apply(
+                            tradeRepository
+                                    .findAllByItemIgnoreCaseAndSellerIgnoreCase(item, seller, pageable)));
         } else if (isAllNonNull.test(new Object[]{minPrice, maxPrice})) {
             return fluxMonoFunction.apply(
-                    //item + minprice + maxprice
                     tradeRepository
                             .findAllByItemIgnoreCaseAndPriceBetween(item, minPrice, maxPrice, pageable));
         } else if (minPrice != null || maxPrice != null) {
             return fluxMonoFunction.apply(minPrice != null ?
-                    //item + minprice
                     tradeRepository
                             .findAllByItemIgnoreCaseAndPriceGreaterThanEqual(item, minPrice, pageable) :
-                    //item + maxprice
                     tradeRepository
                             .findAllByItemIgnoreCaseAndPriceLessThanEqual(item, maxPrice, pageable));
         } else {
-            //item
             return fluxMonoFunction.apply(tradeRepository.findAllByItem(item, pageable));
         }
     }
